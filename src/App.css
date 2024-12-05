@@ -3,6 +3,43 @@
   padding: 0;
 }
 
+.layout {
+  @apply h-[90vh] mt-20 mx-40;
+}
+
 .navbar {
   background-color: #003b44;
+}
+.filters-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  border-radius: 8px;
+  border: 1px solid #e3e3e3;
+}
+
+.icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.table-headings {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #3d3d3d;
+}
+
+.table-data {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: #3d3d3d;
+}
+.fork-star-icon {
+  color: #003b44;
+  width: 20px !important;
+  height: 20px !important;
 }
