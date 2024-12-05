@@ -6,9 +6,14 @@ import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlin
 import ListViewGists from "../list-view-gists/listViewGists";
 import { useState } from "react";
 import CardViewGists from "../card-view-gists/cardViewGists";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/root-reducer";
 
 const LandingPage = () => {
   const [showGridView, setShowGridView] = useState<boolean>(false);
+  const user = useSelector((state: RootState) => state.user.user);
+  console.log("🚀 ~ UUSSSSEERRRR ~ user:", user);
+
   return (
     <div className="layout">
       <div className="mb-4 flex justify-between items-center">

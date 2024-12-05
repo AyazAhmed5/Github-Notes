@@ -2,9 +2,42 @@ import { useState } from "react";
 import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
 import { Button } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
+import { LoginWithGithub } from "../../utilities/utils";
+import { useDispatch } from "react-redux";
+import { setUser, clearUser } from "../../store/user/user.slice";
+import { auth } from "../../../firebaseConfig";
+import { signOut } from "firebase/auth";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogin = async () => {
+    const { user, token } = await LoginWithGithub();
+
+    dispatch(
+      setUser({
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || "Unknown User",
+        token: token ?? null,
+        photoUrl: user.photoURL,
+      })
+    );
+    console.log("🚀 ~ handleLogin ~ token:", token);
+    console.log("🚀 ~ handleLogin ~ user:", user);
+  };
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+
+      dispatch(clearUser());
+
+      console.log("User logged out successfully");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <nav className="navbar text-white">
@@ -24,10 +57,18 @@ const Header = () => {
           </div>
 
           <Button
+            onClick={handleLogin}
             sx={{ textTransform: "none" }}
             className="!bg-white w-20 !text-[#003B44] !font-semibold !text-[12px] rounded"
           >
             Login
+          </Button>
+          <Button
+            onClick={handleLogout}
+            sx={{ textTransform: "none" }}
+            className="!bg-white w-20 !text-[#003B44] !font-semibold !text-[12px] rounded"
+          >
+            Logout
           </Button>
         </div>
 

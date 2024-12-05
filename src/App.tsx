@@ -1,13 +1,18 @@
 import "./App.css";
-import Header from "./components/header/header";
 import { Route, Routes } from "react-router";
 import { createTheme, ThemeProvider } from "@mui/material";
 
-import CardViewGists from "./pages/card-view-gists/cardViewGists";
+import Header from "./components/header/header";
 import CreateGists from "./pages/create-gists/createGists";
-import PublicGistView from "./pages/public-gist-view/publicGistView";
 import UserProfile from "./pages/user-profile/userProfile";
 import LandingPage from "./pages/landing-page/landingPage";
+import CardViewGists from "./pages/card-view-gists/cardViewGists";
+import PublicGistView from "./pages/public-gist-view/publicGistView";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setUser, clearUser } from "./store/user/user.slice"; // Adjust the path based on your project structure
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebaseConfig"; // Import your Firebase config
 
 const theme = createTheme({
   typography: {
@@ -16,6 +21,30 @@ const theme = createTheme({
 });
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // If the user is logged in, update Redux state with user data
+        dispatch(
+          setUser({
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName || "Unknown User",
+            token: "user.token",
+            photoUrl: user.photoURL,
+          })
+        );
+      } else {
+        // If the user is logged out, clear the user data from Redux state
+        dispatch(clearUser());
+      }
+    });
+
+    return () => unsubscribe(); // Clean up the listener on unmount
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <div>
