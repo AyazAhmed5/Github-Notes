@@ -1,16 +1,39 @@
 import { useState } from "react";
 import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
-import { Button } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
 import { LoginWithGithub } from "../../utilities/utils";
 import { useDispatch } from "react-redux";
-import { setUser, clearUser } from "../../store/user/user.slice";
+import {
+  setUser,
+  clearUser,
+  selectIsLoggedIn,
+} from "../../store/user/user.slice";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { auth } from "../../../firebaseConfig";
 import { signOut } from "firebase/auth";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/root-reducer";
+import { Divider, Typography } from "@mui/material";
 
 const Header = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogin = async () => {
     const { user, token } = await LoginWithGithub();
@@ -24,15 +47,13 @@ const Header = () => {
         photoUrl: user.photoURL,
       })
     );
-    console.log("🚀 ~ handleLogin ~ token:", token);
-    console.log("🚀 ~ handleLogin ~ user:", user);
   };
   const handleLogout = async () => {
     try {
       await signOut(auth);
 
       dispatch(clearUser());
-
+      setAnchorEl(null);
       console.log("User logged out successfully");
     } catch (error) {
       console.error("Error during logout:", error);
@@ -55,21 +76,66 @@ const Header = () => {
               className="w-64 pl-10 pr-4 py-2 border border-[#FFFFFF80] text-white bg-[#003b44] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#005f67]"
             />
           </div>
+          {isLoggedIn ? (
+            <div>
+              <Button
+                id="basic-button"
+                aria-controls={open ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                onClick={handleClick}
+              >
+                <img
+                  src={user.photoUrl ?? ""}
+                  alt="John Doe"
+                  className="w-10 h-10 rounded-full"
+                />
+              </Button>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                <MenuItem>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: "bold", paddingBottom: 0 }}
+                  >
+                    Signed in as
+                  </Typography>
+                </MenuItem>
+                <MenuItem>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: "bold", paddingBottom: 0 }}
+                  >
+                    {user.name}
+                  </Typography>
+                </MenuItem>
+                <Divider />
 
-          <Button
-            onClick={handleLogin}
-            sx={{ textTransform: "none" }}
-            className="!bg-white w-20 !text-[#003B44] !font-semibold !text-[12px] rounded"
-          >
-            Login
-          </Button>
-          <Button
-            onClick={handleLogout}
-            sx={{ textTransform: "none" }}
-            className="!bg-white w-20 !text-[#003B44] !font-semibold !text-[12px] rounded"
-          >
-            Logout
-          </Button>
+                <MenuItem onClick={handleClose}>Your gists</MenuItem>
+                <MenuItem onClick={handleClose}>Starred gists</MenuItem>
+                <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
+                <Divider />
+
+                <MenuItem onClick={handleClose}>Help</MenuItem>
+                <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+              </Menu>
+            </div>
+          ) : (
+            <Button
+              onClick={handleLogin}
+              sx={{ textTransform: "none" }}
+              className="!bg-white w-20 !text-[#003B44] !font-semibold !text-[12px] rounded"
+            >
+              Login
+            </Button>
+          )}
         </div>
 
         <div className="md:hidden">

@@ -5,7 +5,6 @@ import { RootState } from "../../store/root-reducer";
 
 const ListViewGists = () => {
   const user = useSelector((state: RootState) => state.user.user);
-
   return (
     <div>
       <table className="w-full border-collapse text-left">
@@ -22,7 +21,7 @@ const ListViewGists = () => {
           <tr className="border-b hover:bg-gray-50">
             <td className="p-4 flex items-center gap-2">
               <img
-                src={user.photoUrl ? user.photoUrl : ""}
+                src={user?.photoUrl ? user?.photoUrl : ""}
                 alt="John Doe"
                 className="w-10 h-10 rounded-full"
               />

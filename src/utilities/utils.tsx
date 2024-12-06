@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 
@@ -7,12 +8,10 @@ export const LoginWithGithub = async () => {
   provider.addScope("gist");
 
   try {
-    const result = await signInWithPopup(auth, provider);
-
-    const credential = GithubAuthProvider.credentialFromResult(result);
-    const token = credential?.accessToken;
+    const result: any = await signInWithPopup(auth, provider);
 
     const user = result.user;
+    const token = result.user.accesstoken;
     return { user, token };
   } catch (error) {
     console.error("Error during GitHub login:", error);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "./App.css";
 import { Route, Routes } from "react-router";
 import { createTheme, ThemeProvider } from "@mui/material";
@@ -24,15 +25,14 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user: any) => {
       if (user) {
-        // If the user is logged in, update Redux state with user data
         dispatch(
           setUser({
             uid: user.uid,
             email: user.email,
             name: user.displayName || "Unknown User",
-            token: "user.token",
+            token: user.accessToken,
             photoUrl: user.photoURL,
           })
         );
