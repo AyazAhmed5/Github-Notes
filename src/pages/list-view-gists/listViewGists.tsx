@@ -7,22 +7,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { forkGist, formatTimeAgo, starGist } from "../../utilities/utils";
 import { toast } from "react-toastify";
-import { CircularProgress, Skeleton } from "@mui/material";
+import { CircularProgress, Popover, Skeleton, Typography } from "@mui/material";
 import { useState } from "react";
 import { setStarred } from "../../store/gists/gists.slice";
 import { Gist } from "../../utilities/types";
-import { setTrigger } from "../../store/user/user.slice";
+import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 
 const ListViewGists = () => {
   const { gists, searchedGist, gistLoading } = useSelector(
     (state: RootState) => state.gists
   );
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
   const dispatch = useDispatch();
   const { user, starredGists } = useSelector((state: RootState) => state.user);
 
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { fork: boolean; star: boolean };
   }>({});
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleForkClick = async (gistId: string, token: string | null) => {
     if (!token) return;
@@ -102,7 +110,13 @@ const ListViewGists = () => {
         <td className="p-3 table-data">{formatTimeAgo(gist.updated_at)}</td>
         <td className="p-3 flex items-center justify-end">
           <button
-            onClick={() => handleForkClick(gist.id, user?.token)}
+            onClick={(e) => {
+              if (isLoggedIn) {
+                handleForkClick(gist.id, user?.token);
+              } else {
+                handleClick(e);
+              }
+            }}
             className="p-3 hover:bg-gray-200 rounded-full"
           >
             {loadingStates[gist.id]?.fork ? (
@@ -112,7 +126,13 @@ const ListViewGists = () => {
             )}
           </button>
           <button
-            onClick={() => handleStarClick(gist.id, user?.token)}
+            onClick={(e) => {
+              if (isLoggedIn) {
+                handleStarClick(gist.id, user?.token);
+              } else {
+                handleClick(e);
+              }
+            }}
             className="p-3 hover:bg-gray-200 rounded-full"
           >
             {loadingStates[gist.id]?.star ? (
@@ -127,6 +147,19 @@ const ListViewGists = () => {
               />
             )}
           </button>
+          <Popover
+            open={open}
+            anchorEl={anchorEl}
+            onClose={() => setAnchorEl(null)}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <Typography sx={{ p: 2 }}>
+              Please login first in order to perform this action!!
+            </Typography>
+          </Popover>
         </td>
       </tr>
     );

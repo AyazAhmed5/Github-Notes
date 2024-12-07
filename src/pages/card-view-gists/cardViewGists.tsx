@@ -7,6 +7,7 @@ import {
   Typography,
   Skeleton,
   CircularProgress,
+  Popover,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import StarIcon from "@mui/icons-material/Star";
@@ -24,7 +25,7 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setStarred } from "../../store/gists/gists.slice";
-import { setTrigger } from "../../store/user/user.slice";
+import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 import { Gist } from "../../utilities/types";
 import { setLoading } from "../../store/gists/gists.slice";
 
@@ -33,7 +34,10 @@ const CardViewGists = () => {
     (state: RootState) => state.gists
   );
   const { user, starredGists } = useSelector((state: RootState) => state.user);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const open = Boolean(anchorEl);
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { fork: boolean; star: boolean };
   }>({});
@@ -58,6 +62,10 @@ const CardViewGists = () => {
       fetchContents();
     }
   }, [dispatch, gists]);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleForkClick = async (gistId: string, token: string | null) => {
     if (!token) return;
@@ -162,7 +170,13 @@ const CardViewGists = () => {
             </Typography>
             <div className="p-3 flex items-center justify-end card-lower-icons">
               <button
-                onClick={() => handleForkClick(gist.id, user?.token)}
+                onClick={(e) => {
+                  if (isLoggedIn) {
+                    handleForkClick(gist.id, user?.token);
+                  } else {
+                    handleClick(e);
+                  }
+                }}
                 className="p-3 hover:bg-gray-200 rounded-full"
               >
                 {loadingStates[gist.id]?.fork ? (
@@ -176,7 +190,13 @@ const CardViewGists = () => {
                 )}
               </button>
               <button
-                onClick={() => handleStarClick(gist.id, user?.token)}
+                onClick={(e) => {
+                  if (isLoggedIn) {
+                    handleStarClick(gist.id, user?.token);
+                  } else {
+                    handleClick(e);
+                  }
+                }}
                 className="p-3 hover:bg-gray-200 rounded-full"
               >
                 {loadingStates[gist.id]?.star ? (
@@ -193,6 +213,19 @@ const CardViewGists = () => {
                   />
                 )}
               </button>
+              <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <Typography sx={{ p: 2 }}>
+                  Please login first in order to perform this action!!
+                </Typography>
+              </Popover>
             </div>
           </Box>
         </CardContent>
