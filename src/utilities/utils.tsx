@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
@@ -19,6 +20,18 @@ export const LoginWithGithub = async () => {
     console.error("Error during GitHub login:", error);
     throw error;
   }
+};
+
+export const fetchUserProfile = async (token: string) => {
+  const response = await fetch("https://api.github.com/user", {
+    headers: {
+      Authorization: `token ${token}`,
+    },
+  });
+
+  const userData = await response.json();
+
+  return userData.html_url;
 };
 
 export const getPublicGists = async (

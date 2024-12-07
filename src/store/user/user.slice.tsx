@@ -1,15 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface User {
-  uid: string | null;
-  email: string | null;
-  name: string | null;
-  token: string | null;
-  photoUrl: string | null;
-}
+import { User } from "../../utilities/types";
 
 interface UserState {
   user: User;
+  userGithubProfile: string;
 }
 
 const initialState: UserState = {
@@ -20,6 +14,7 @@ const initialState: UserState = {
     token: null,
     photoUrl: null,
   },
+  userGithubProfile: "",
 };
 
 const userSlice = createSlice({
@@ -29,17 +24,18 @@ const userSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
+    setUserGithubProfile: (state, action: PayloadAction<string>) => {
+      state.userGithubProfile = action.payload;
+    },
     clearUser: (state) => {
       state.user = initialState.user;
     },
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, clearUser, setUserGithubProfile } = userSlice.actions;
 
 export const selectIsLoggedIn = (state: { user: UserState }) =>
   !!state.user.user?.uid;
-
-export const selectUser = (state: { user: UserState }) => state.user.user;
 
 export default userSlice.reducer;

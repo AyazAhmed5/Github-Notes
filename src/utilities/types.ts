@@ -16,3 +16,11 @@ export interface publicGistInterface {
     };
   };
 }
+
+export interface User {
+  uid: string | null;
+  email: string | null;
+  name: string | null;
+  token: string | null;
+  photoUrl: string | null;
+}

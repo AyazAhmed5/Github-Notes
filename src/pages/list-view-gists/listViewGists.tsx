@@ -1,37 +1,12 @@
 import ForkIcon from "../../assets/images/forkIcon.svg";
 import StarIcon from "../../assets/images/star-icon.svg";
-import leftIcon from "../../assets/images/leftIcon.svg";
-import rightIcon from "../../assets/images/righIcon.svg";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
-import { useEffect } from "react";
-import { formatTimeAgo, getPublicGists } from "../../utilities/utils";
-import { setGists, setPage } from "../../store/gists/gists.slice";
-import { Box } from "@mui/material";
+import { formatTimeAgo } from "../../utilities/utils";
 
 const ListViewGists = () => {
-  const user = useSelector((state: RootState) => state.user.user);
-  const dispatch = useDispatch();
-  const { gists, page } = useSelector((state: RootState) => state.gists);
-
-  useEffect(() => {
-    const fetchGists = async () => {
-      const data = await getPublicGists(page, 6);
-      if (data) dispatch(setGists(data));
-    };
-
-    fetchGists();
-  }, [dispatch, page, user.token]);
-
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      dispatch(setPage(page - 1));
-    }
-  };
-
-  const handleNextPage = () => {
-    dispatch(setPage(page + 1));
-  };
+  const { gists } = useSelector((state: RootState) => state.gists);
 
   return (
     <div>
@@ -87,31 +62,6 @@ const ListViewGists = () => {
             </tr>
           ))}
         </tbody>
-        <tfoot className="bg-gray-100">
-          <tr>
-            <td colSpan={5} className="p-3">
-              <Box className="flex justify-end items-center gap-10 ">
-                <img
-                  onClick={handlePreviousPage}
-                  src={leftIcon}
-                  alt="Previous Page"
-                  className={`${page === 1 ? "" : "cursor-pointer"}`}
-                />
-                <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
-                  Page
-                  <span className="border px-2 py-1 rounded-md">{page}</span>
-                  of 14
-                </div>
-                <img
-                  onClick={handleNextPage}
-                  src={rightIcon}
-                  alt="Next Page"
-                  className="cursor-pointer"
-                />
-              </Box>
-            </td>
-          </tr>
-        </tfoot>
       </table>
     </div>
   );

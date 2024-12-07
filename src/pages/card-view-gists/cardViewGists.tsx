@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -7,50 +7,37 @@ import {
   Typography,
   Skeleton,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import leftIcon from "../../assets/images/leftIcon.svg";
-import rightIcon from "../../assets/images/righIcon.svg";
+import { useSelector } from "react-redux";
+
 import { RootState } from "../../store/root-reducer";
-import { fetchGistDetails, formatCreatedAt } from "../../utilities/utils";
-import { setLoading, setPage } from "../../store/gists/gists.slice";
+import { formatCreatedAt } from "../../utilities/utils";
+// import { setLoading } from "../../store/gists/gists.slice";
 
 const CardViewGists = () => {
-  const { gists, loading, page } = useSelector(
-    (state: RootState) => state.gists
-  );
-  const dispatch = useDispatch();
-  const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
-    {}
-  );
-  useEffect(() => {
-    const fetchContents = async () => {
-      dispatch(setLoading(true));
-      const contents: { [key: string]: string } = {};
-      for (const gist of gists) {
-        const content = await fetchGistDetails(gist.id);
-        contents[gist.id] = content;
-      }
-      setGistContents(contents);
-      dispatch(setLoading(false));
-    };
+  const { gists, loading } = useSelector((state: RootState) => state.gists);
+  // const dispatch = useDispatch();
+  // const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
+  //   {}
+  // );
+  // useEffect(() => {
+  //   const fetchContents = async () => {
+  //     dispatch(setLoading(true));
+  //     const contents: { [key: string]: string } = {};
+  //     for (const gist of gists) {
+  //       const content = await fetchGistDetails(gist.id);
+  //       contents[gist.id] = content;
+  //     }
+  //     setGistContents(contents);
+  //     dispatch(setLoading(false));
+  //   };
 
-    if (gists.length > 0) {
-      fetchContents();
-    }
-  }, [dispatch, gists]);
-
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      dispatch(setPage(page - 1));
-    }
-  };
-
-  const handleNextPage = () => {
-    dispatch(setPage(page + 1));
-  };
+  //   if (gists.length > 0) {
+  //     fetchContents();
+  //   }
+  // }, [dispatch, gists]);
 
   return (
-    <div className="flex justify-start items-center flex-wrap gap-4">
+    <div className="flex justify-center items-center flex-wrap gap-4 mb-3">
       {gists.map((gist) => (
         <Card
           key={gist.id}
@@ -71,9 +58,10 @@ const CardViewGists = () => {
                 className="text-[12px] leading-[1.4] overflow-auto w-full max-h-full"
                 style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
               >
-                {gistContents[gist.id]
+                nothing
+                {/* {gistContents[gist.id]
                   ? gistContents[gist.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
-                  : "No preview available"}
+                  : "No preview available"} */}
               </pre>
             )}
           </Box>
@@ -113,33 +101,6 @@ const CardViewGists = () => {
           </CardContent>
         </Card>
       ))}
-      <table className="w-full border-collapse">
-        <tfoot className="bg-gray-100 w-[98%]">
-          <tr>
-            <td colSpan={5} className="p-3">
-              <Box className="flex justify-end items-center gap-10 ">
-                <img
-                  onClick={handlePreviousPage}
-                  src={leftIcon}
-                  alt="Previous Page"
-                  className={`${page === 1 ? "" : "cursor-pointer"}`}
-                />
-                <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
-                  Page
-                  <span className="border px-2 py-1 rounded-md">{page}</span>
-                  of 14
-                </div>
-                <img
-                  onClick={handleNextPage}
-                  src={rightIcon}
-                  alt="Next Page"
-                  className="cursor-pointer"
-                />
-              </Box>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
     </div>
   );
 };

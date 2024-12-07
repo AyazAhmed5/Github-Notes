@@ -4,11 +4,38 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlined";
 
 import ListViewGists from "../list-view-gists/listViewGists";
-import { useState } from "react";
+import leftIcon from "../../assets/images/leftIcon.svg";
+import rightIcon from "../../assets/images/righIcon.svg";
+import { useEffect, useState } from "react";
 import CardViewGists from "../card-view-gists/cardViewGists";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/root-reducer";
+import { setGists, setPage } from "../../store/gists/gists.slice";
+import { getPublicGists } from "../../utilities/utils";
 
 const LandingPage = () => {
   const [showGridView, setShowGridView] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const { page } = useSelector((state: RootState) => state.gists);
+
+  useEffect(() => {
+    const fetchGists = async () => {
+      const data = await getPublicGists(page, 6);
+      if (data) dispatch(setGists(data));
+    };
+
+    fetchGists();
+  }, [dispatch, page]);
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      dispatch(setPage(page - 1));
+    }
+  };
+
+  const handleNextPage = () => {
+    dispatch(setPage(page + 1));
+  };
 
   return (
     <div className="layout">
@@ -42,6 +69,35 @@ const LandingPage = () => {
         </div>
       </div>
       {showGridView ? <CardViewGists /> : <ListViewGists />}
+
+      {/*Table Footer */}
+      <table className="w-full border-collapse rounded-lg">
+        <tfoot className="bg-gray-100 w-[98%]">
+          <tr>
+            <td colSpan={5} className="p-3">
+              <Box className="flex justify-end items-center gap-10 ">
+                <img
+                  onClick={handlePreviousPage}
+                  src={leftIcon}
+                  alt="Previous Page"
+                  className={`${page === 1 ? "" : "cursor-pointer"}`}
+                />
+                <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
+                  Page
+                  <span className="border px-2 py-1 rounded-md">{page}</span>
+                  of 14
+                </div>
+                <img
+                  onClick={handleNextPage}
+                  src={rightIcon}
+                  alt="Next Page"
+                  className="cursor-pointer"
+                />
+              </Box>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 };
