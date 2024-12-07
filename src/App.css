@@ -4,7 +4,7 @@
 }
 
 .layout {
-  @apply h-[90vh] mt-20 mx-40;
+  @apply mt-10 mx-40;
 }
 
 .navbar {
