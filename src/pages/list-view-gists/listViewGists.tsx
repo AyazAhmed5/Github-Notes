@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ForkIcon from "../../assets/images/forkIcon.svg";
 import starIcon from "../../assets/images/star-icon.svg";
 import StarIcon from "@mui/icons-material/Star";
@@ -28,10 +29,6 @@ const ListViewGists = () => {
     [key: string]: { fork: boolean; star: boolean };
   }>({});
   const [loading, setLoading] = useState<boolean>(false);
-
-  gists.map((gist) => {
-    starredGists.some((starredGist: Gist) => starredGist.id === gist.id);
-  });
 
   const handleForkClick = async (gistId: string, token: string | null) => {
     if (!token) return;
@@ -81,6 +78,7 @@ const ListViewGists = () => {
       const gist = await fetchGistById(searchQuery, user?.token); // Make sure to pass the token if needed
       if (gist) {
         setFilteredGist(gist);
+        setLoading(false);
       } else {
         setFilteredGist(null);
       }
@@ -94,6 +92,8 @@ const ListViewGists = () => {
   }, [gists, searchQuery, user?.token]);
 
   const renderGistRow = (gist: Gist) => {
+    if (!gist) return null;
+
     const isStarred = starredGists.some(
       (starredGist: Gist) => starredGist.id === gist.id
     );
