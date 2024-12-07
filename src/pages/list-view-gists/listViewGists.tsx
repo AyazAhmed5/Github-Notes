@@ -13,7 +13,6 @@ const ListViewGists = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
   const { gists, page } = useSelector((state: RootState) => state.gists);
-  console.log("🚀 ~ ListViewGists ~ page:", page);
 
   useEffect(() => {
     const fetchGists = async () => {
@@ -22,7 +21,7 @@ const ListViewGists = () => {
     };
 
     fetchGists();
-  }, [dispatch, user.token]);
+  }, [dispatch, page, user.token]);
 
   const handlePreviousPage = () => {
     if (page > 1) {
@@ -48,7 +47,10 @@ const ListViewGists = () => {
         </thead>
         <tbody>
           {gists.map((gist) => (
-            <tr className="border-b hover:bg-gray-50 cursor-pointer">
+            <tr
+              key={gist.id}
+              className="border-b hover:bg-gray-50 cursor-pointer border-l border-r"
+            >
               <td className="p-3 flex items-center gap-2">
                 <img
                   src={gist.owner.avatar_url}

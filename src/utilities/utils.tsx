@@ -46,6 +46,14 @@ export const getPublicGists = async (
   }
 };
 
+export const fetchGistDetails = async (gistId: string) => {
+  const response = await fetch(`https://api.github.com/gists/${gistId}`);
+  const data = await response.json();
+
+  const file = data.files[Object.keys(data.files)[0]];
+  return file?.content;
+};
+
 export const formatTimeAgo = (timestamp: string): string => {
   const now = new Date();
   const updatedAt = new Date(timestamp);
@@ -63,5 +71,25 @@ export const formatTimeAgo = (timestamp: string): string => {
     return `Last updated ${hours} hour${hours !== 1 ? "s" : ""} ago`;
   } else {
     return `Last updated ${days} day${days !== 1 ? "s" : ""} ago`;
+  }
+};
+
+export const formatCreatedAt = (timestamp: string): string => {
+  const now = new Date();
+  const createdAt = new Date(timestamp);
+
+  const seconds = Math.floor((now.getTime() - createdAt.getTime()) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) {
+    return `Created ${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+  } else if (minutes < 60) {
+    return `Created ${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+  } else if (hours < 24) {
+    return `Created ${hours} hour${hours !== 1 ? "s" : ""} ago`;
+  } else {
+    return `Created ${days} day${days !== 1 ? "s" : ""} ago`;
   }
 };
