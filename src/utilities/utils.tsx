@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
-import { publicGistInterface } from "./types";
+import { Gist, publicGistInterface } from "./types";
 
 export const LoginWithGithub = async () => {
   const provider = new GithubAuthProvider();
@@ -19,6 +19,117 @@ export const LoginWithGithub = async () => {
   } catch (error) {
     console.error("Error during GitHub login:", error);
     throw error;
+  }
+};
+
+export const fetchGistById = async (
+  gistId: string,
+  token: string | null
+): Promise<Gist | null> => {
+  if (!gistId) return null;
+
+  try {
+    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: "GET",
+      headers: {
+        Authorization: token ? `token ${token}` : "",
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching gist: ${response.statusText}`);
+    }
+
+    const gist = await response.json();
+    if (gist) {
+      return gist;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching gist:", error);
+    return null;
+  }
+};
+
+export const forkGist = async (gistId: string, token: string) => {
+  try {
+    const response = await fetch(
+      `https://api.github.com/gists/${gistId}/forks`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `token ${token}`, // The OAuth token for the authenticated user
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fork the gist");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error forking gist");
+  }
+};
+
+export const starGist = async (gistId: string, token: string) => {
+  try {
+    const response = await fetch(
+      `https://api.github.com/gists/${gistId}/star`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to star the gist");
+    }
+
+    return { message: "Gist starred successfully" }; // Custom message
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error starring gist");
+  }
+};
+
+export const fetchStarredGists = async (
+  token: string | null
+): Promise<Gist[]> => {
+  if (!token) {
+    return [];
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/gists/starred?${new Date().getTime()}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch starred gists");
+    }
+
+    const data: Gist[] = await response.json();
+    return data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return [];
   }
 };
 

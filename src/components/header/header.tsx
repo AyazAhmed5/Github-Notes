@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
 import { FaSearch } from "react-icons/fa";
-import { fetchUserProfile, LoginWithGithub } from "../../utilities/utils";
+
+import {
+  fetchStarredGists,
+  fetchUserProfile,
+  LoginWithGithub,
+} from "../../utilities/utils";
 import { useDispatch } from "react-redux";
+import { debounce } from "lodash";
 import {
   setUser,
-  clearUser,
   selectIsLoggedIn,
   setUserGithubProfile,
+  setStarredGist,
+  clearUser,
 } from "../../store/user/user.slice";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
@@ -17,11 +24,11 @@ import { signOut } from "firebase/auth";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { Divider, Typography } from "@mui/material";
-import { setPage } from "../../store/gists/gists.slice";
+import { setPage, setSearchQuery } from "../../store/gists/gists.slice";
 import { Link } from "react-router-dom";
 
 const Header = () => {
-  const { user, userGithubProfile } = useSelector(
+  const { user, userGithubProfile, trigger } = useSelector(
     (state: RootState) => state.user
   );
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -42,6 +49,16 @@ const Header = () => {
   const handleLogoClick = () => {
     dispatch(setPage(1));
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.token) {
+        const gists = await fetchStarredGists(user.token);
+        dispatch(setStarredGist(gists));
+      }
+    };
+    fetchData();
+  }, [dispatch, user.token, trigger]);
 
   const handleLogin = async () => {
     const { user, token } = await LoginWithGithub();
@@ -68,6 +85,12 @@ const Header = () => {
       console.error("Error during logout:", error);
     }
   };
+
+  const handleSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchQuery(e.target.value));
+  };
+
+  const debouncedSearchQuery = debounce(handleSearchQuery, 800);
 
   useEffect(() => {
     const fetchGists = async () => {
@@ -97,6 +120,7 @@ const Header = () => {
             <input
               type="text"
               placeholder="Search gists..."
+              onChange={debouncedSearchQuery}
               className="w-64 pl-10 pr-4 py-2 border border-[#FFFFFF80] text-white bg-[#003b44] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#005f67]"
             />
           </div>

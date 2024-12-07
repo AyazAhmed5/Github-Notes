@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../../utilities/types";
+import { Gist, User } from "../../utilities/types";
 
 interface UserState {
   user: User;
   userGithubProfile: string;
+  starredGists: Gist[];
+  trigger: boolean;
 }
 
 const initialState: UserState = {
@@ -14,7 +16,9 @@ const initialState: UserState = {
     token: null,
     photoUrl: null,
   },
+  starredGists: [],
   userGithubProfile: "",
+  trigger: false,
 };
 
 const userSlice = createSlice({
@@ -27,13 +31,25 @@ const userSlice = createSlice({
     setUserGithubProfile: (state, action: PayloadAction<string>) => {
       state.userGithubProfile = action.payload;
     },
+    setStarredGist: (state, action: PayloadAction<Gist[]>) => {
+      state.starredGists = action.payload;
+    },
+    setTrigger: (state) => {
+      state.trigger = !state.trigger;
+    },
     clearUser: (state) => {
       state.user = initialState.user;
     },
   },
 });
 
-export const { setUser, clearUser, setUserGithubProfile } = userSlice.actions;
+export const {
+  setUser,
+  clearUser,
+  setStarredGist,
+  setUserGithubProfile,
+  setTrigger,
+} = userSlice.actions;
 
 export const selectIsLoggedIn = (state: { user: UserState }) =>
   !!state.user.user?.uid;

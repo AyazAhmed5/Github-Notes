@@ -43,3 +43,25 @@
   width: 20px !important;
   height: 20px !important;
 }
+.card-lower-icons {
+  position: absolute;
+  right: 0;
+  top: 15%;
+  display: flex;
+  height: 100%;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.3s,
+    transform 0.3s ease,
+    backdrop-filter 0.3s ease;
+  z-index: 1;
+}
+
+.card:hover .card-lower-icons {
+  opacity: 1;
+  transform: translateY(0);
+  backdrop-filter: blur(10px);
+  background-color: white;
+}

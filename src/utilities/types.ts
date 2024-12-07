@@ -6,6 +6,7 @@ export interface publicGistInterface {
   public: boolean;
   owner: { login: string; avatar_url: string };
   updated_at: string;
+  isStarred: boolean;
   files: {
     [fileName: string]: {
       filename: string;
@@ -23,4 +24,16 @@ export interface User {
   name: string | null;
   token: string | null;
   photoUrl: string | null;
+}
+
+export interface Gist {
+  id: string;
+  files: Record<string, { filename: string }>;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+  description: string;
+  created_at: string;
+  updated_at: string;
 }

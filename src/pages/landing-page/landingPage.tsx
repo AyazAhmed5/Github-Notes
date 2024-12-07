@@ -85,7 +85,7 @@ const LandingPage = () => {
                 <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
                   Page
                   <span className="border px-2 py-1 rounded-md">{page}</span>
-                  of 14
+                  of 500
                 </div>
                 <img
                   onClick={handleNextPage}

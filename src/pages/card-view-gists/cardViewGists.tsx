@@ -6,15 +6,32 @@ import {
   Avatar,
   Typography,
   Skeleton,
+  CircularProgress,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import StarIcon from "@mui/icons-material/Star";
+
+import ForkIcon from "../../assets/images/forkIcon.svg";
+import starIcon from "../../assets/images/star-icon.svg";
 
 import { RootState } from "../../store/root-reducer";
-import { formatCreatedAt } from "../../utilities/utils";
+import { forkGist, formatCreatedAt, starGist } from "../../utilities/utils";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { setStarred } from "../../store/gists/gists.slice";
+import { setTrigger } from "../../store/user/user.slice";
+import { Gist } from "../../utilities/types";
 // import { setLoading } from "../../store/gists/gists.slice";
 
 const CardViewGists = () => {
   const { gists, loading } = useSelector((state: RootState) => state.gists);
+  const { user, starredGists } = useSelector((state: RootState) => state.user);
+
+  const [loadingStates, setLoadingStates] = useState<{
+    [key: string]: { fork: boolean; star: boolean };
+  }>({});
+  const dispatch = useDispatch();
+
   // const dispatch = useDispatch();
   // const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
   //   {}
@@ -36,12 +53,55 @@ const CardViewGists = () => {
   //   }
   // }, [dispatch, gists]);
 
+  const handleForkClick = async (gistId: string, token: string | null) => {
+    if (!token) return;
+    setLoadingStates((prev) => ({
+      ...prev,
+      [gistId]: { ...prev[gistId], fork: true },
+    }));
+    try {
+      const forkedGist = await forkGist(gistId, token);
+
+      if (forkedGist) {
+        toast.success("Gist forked successfully! 🚀");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], fork: false },
+        }));
+      }
+    } catch (error) {
+      if (error) toast.error("Something Went Wrong ");
+    }
+  };
+
+  const handleStarClick = async (gistId: string, token: string | null) => {
+    if (!token) return;
+    setLoadingStates((prev) => ({
+      ...prev,
+      [gistId]: { ...prev[gistId], star: true },
+    }));
+    try {
+      const response = await starGist(gistId, token);
+      if (response) {
+        toast.success("Gist Starred successfully! 🚀");
+        dispatch(setStarred({ gistId, isStarred: true }));
+        dispatch(setTrigger());
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], star: false },
+        }));
+      }
+    } catch (error) {
+      if (error) toast.error("Something Went Wrong ");
+    }
+  };
+
   return (
-    <div className="flex justify-center items-center flex-wrap gap-4 mb-3">
+    <div className="flex justify-center items-center flex-wrap gap-4 mb-3 ">
       {gists.map((gist) => (
         <Card
           key={gist.id}
-          className="w-[380px] h-[280px] max-w-[390px] max-h-[290px] rounded-md shadow-md"
+          className="w-[385px] h-[280px] max-w-[390px] max-h-[290px] rounded-md shadow-md card cursor-pointer"
         >
           <Box
             className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center  flex-col"
@@ -65,7 +125,7 @@ const CardViewGists = () => {
               </pre>
             )}
           </Box>
-          <CardContent className="flex items-start p-4 gap-4">
+          <CardContent className="flex items-start p-4 gap-4  relative">
             <Avatar
               src={gist.owner.avatar_url}
               alt="User Photo"
@@ -97,6 +157,40 @@ const CardViewGists = () => {
               >
                 {gist.description}
               </Typography>
+              <div className="p-3 flex items-center justify-end card-lower-icons">
+                <button
+                  onClick={() => handleForkClick(gist.id, user?.token)}
+                  className="p-3 hover:bg-gray-200 rounded-full"
+                >
+                  {loadingStates[gist.id]?.fork ? (
+                    <CircularProgress className="!text-[#003B44]" size={20} />
+                  ) : (
+                    <img
+                      src={ForkIcon}
+                      className="fork-star-icon"
+                      alt="fork-icon"
+                    />
+                  )}
+                </button>
+                <button
+                  onClick={() => handleStarClick(gist.id, user?.token)}
+                  className="p-3 hover:bg-gray-200 rounded-full"
+                >
+                  {loadingStates[gist.id]?.star ? (
+                    <CircularProgress className="!text-[#003B44]" size={20} />
+                  ) : starredGists.some(
+                      (starredGist: Gist) => starredGist.id === gist.id
+                    ) ? (
+                    <StarIcon />
+                  ) : (
+                    <img
+                      src={starIcon}
+                      className="fork-star-icon"
+                      alt="filled-star"
+                    />
+                  )}
+                </button>
+              </div>
             </Box>
           </CardContent>
         </Card>
