@@ -3,6 +3,7 @@ import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
 import { FaSearch } from "react-icons/fa";
 
 import {
+  fetchGistById,
   fetchStarredGists,
   fetchUserProfile,
   LoginWithGithub,
@@ -24,13 +25,19 @@ import { signOut } from "firebase/auth";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { Divider, Typography } from "@mui/material";
-import { setPage, setSearchQuery } from "../../store/gists/gists.slice";
+import {
+  setGistLoading,
+  setPage,
+  setSearchedGist,
+  setSearchQuery,
+} from "../../store/gists/gists.slice";
 import { Link } from "react-router-dom";
 
 const Header = () => {
   const { user, userGithubProfile, trigger } = useSelector(
     (state: RootState) => state.user
   );
+  const { searchQuery } = useSelector((state: RootState) => state.gists);
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const dispatch = useDispatch();
 
@@ -49,6 +56,26 @@ const Header = () => {
   const handleLogoClick = () => {
     dispatch(setPage(1));
   };
+
+  useEffect(() => {
+    const fetchGist = async () => {
+      const gist = await fetchGistById(searchQuery, user?.token); // Make sure to pass the token if needed
+      if (gist) {
+        dispatch(setSearchedGist(gist));
+        dispatch(setGistLoading(false));
+      } else {
+        dispatch(setSearchedGist(null));
+        dispatch(setGistLoading(true));
+      }
+    };
+    if (searchQuery) {
+      dispatch(setGistLoading(true));
+      fetchGist();
+    } else {
+      dispatch(setGistLoading(false));
+      dispatch(setSearchedGist(null));
+    }
+  }, [dispatch, searchQuery, user?.token]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,10 +114,14 @@ const Header = () => {
   };
 
   const handleSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchQuery(e.target.value));
+    if (e.target.value !== "") {
+      dispatch(setSearchQuery(e.target.value));
+    } else {
+      dispatch(setSearchQuery(""));
+    }
   };
 
-  const debouncedSearchQuery = debounce(handleSearchQuery, 800);
+  const debouncedSearchQuery = debounce(handleSearchQuery, 500);
 
   useEffect(() => {
     const fetchGists = async () => {

@@ -15,43 +15,49 @@ import ForkIcon from "../../assets/images/forkIcon.svg";
 import starIcon from "../../assets/images/star-icon.svg";
 
 import { RootState } from "../../store/root-reducer";
-import { forkGist, formatCreatedAt, starGist } from "../../utilities/utils";
-import { useState } from "react";
+import {
+  fetchGistDetails,
+  forkGist,
+  formatCreatedAt,
+  starGist,
+} from "../../utilities/utils";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setStarred } from "../../store/gists/gists.slice";
 import { setTrigger } from "../../store/user/user.slice";
-import { Gist, publicGistInterface } from "../../utilities/types";
-// import { setLoading } from "../../store/gists/gists.slice";
+import { Gist } from "../../utilities/types";
+import { setLoading } from "../../store/gists/gists.slice";
 
 const CardViewGists = () => {
-  const { gists, loading } = useSelector((state: RootState) => state.gists);
+  const { gists, loading, gistLoading, searchedGist } = useSelector(
+    (state: RootState) => state.gists
+  );
   const { user, starredGists } = useSelector((state: RootState) => state.user);
 
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { fork: boolean; star: boolean };
   }>({});
+
   const dispatch = useDispatch();
+  const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
+    {}
+  );
+  useEffect(() => {
+    const fetchContents = async () => {
+      dispatch(setLoading(true));
+      const contents: { [key: string]: string } = {};
+      for (const gist of gists) {
+        const content = await fetchGistDetails(gist.id);
+        contents[gist.id] = content;
+      }
+      setGistContents(contents);
+      dispatch(setLoading(false));
+    };
 
-  // const dispatch = useDispatch();
-  // const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
-  //   {}
-  // );
-  // useEffect(() => {
-  //   const fetchContents = async () => {
-  //     dispatch(setLoading(true));
-  //     const contents: { [key: string]: string } = {};
-  //     for (const gist of gists) {
-  //       const content = await fetchGistDetails(gist.id);
-  //       contents[gist.id] = content;
-  //     }
-  //     setGistContents(contents);
-  //     dispatch(setLoading(false));
-  //   };
-
-  //   if (gists.length > 0) {
-  //     fetchContents();
-  //   }
-  // }, [dispatch, gists]);
+    if (gists.length > 0) {
+      fetchContents();
+    }
+  }, [dispatch, gists]);
 
   const handleForkClick = async (gistId: string, token: string | null) => {
     if (!token) return;
@@ -96,12 +102,12 @@ const CardViewGists = () => {
     }
   };
 
-  const cardRenderer = (gist: Gist | publicGistInterface) => {
+  const cardRenderer = (gist: Gist, temp?: boolean) => {
     if (!gist) return null;
     return (
       <Card
         key={gist.id}
-        className="w-[385px] h-[280px] max-w-[390px] max-h-[290px] rounded-md shadow-md card cursor-pointer"
+        className={`${temp ? "w-[100%]" : "w-[385px]"} h-[280px] ${temp ? "" : "max-w-[390px]"} max-h-[290px] rounded-md shadow-md card cursor-pointer`}
       >
         <Box
           className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center  flex-col"
@@ -118,10 +124,9 @@ const CardViewGists = () => {
               className="text-[12px] leading-[1.4] overflow-auto w-full max-h-full"
               style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
             >
-              nothing
-              {/* {gistContents[gist.id]
-        ? gistContents[gist.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
-        : "No preview available"} */}
+              {gistContents[gist.id]
+                ? gistContents[gist.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
+                : "No preview available"}
             </pre>
           )}
         </Box>
@@ -196,8 +201,18 @@ const CardViewGists = () => {
   };
 
   return (
-    <div className="flex justify-center items-center flex-wrap gap-4 mb-3 ">
-      {gists.map((gist) => cardRenderer(gist))}
+    <div className="flex justify-center items-center flex-wrap gap-4 mb-3">
+      {gistLoading ? (
+        <>
+          <Skeleton variant="text" width="400%" height="100%" />
+          <Skeleton variant="text" width="500%" height="100%" />
+          <Skeleton variant="text" width="600%" height="100%" />
+        </>
+      ) : searchedGist ? (
+        cardRenderer(searchedGist, true)
+      ) : (
+        gists?.map((gist) => cardRenderer(gist, false))
+      )}
     </div>
   );
 };

@@ -5,30 +5,24 @@ import StarIcon from "@mui/icons-material/Star";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
-import {
-  fetchGistById,
-  forkGist,
-  formatTimeAgo,
-  starGist,
-} from "../../utilities/utils";
+import { forkGist, formatTimeAgo, starGist } from "../../utilities/utils";
 import { toast } from "react-toastify";
 import { CircularProgress, Skeleton } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { setStarred } from "../../store/gists/gists.slice";
 import { Gist } from "../../utilities/types";
 import { setTrigger } from "../../store/user/user.slice";
 
 const ListViewGists = () => {
-  const { gists, searchQuery } = useSelector((state: RootState) => state.gists);
+  const { gists, searchedGist, gistLoading } = useSelector(
+    (state: RootState) => state.gists
+  );
   const dispatch = useDispatch();
   const { user, starredGists } = useSelector((state: RootState) => state.user);
-
-  const [filteredGist, setFilteredGist] = useState<Gist | null>();
 
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { fork: boolean; star: boolean };
   }>({});
-  const [loading, setLoading] = useState<boolean>(false);
 
   const handleForkClick = async (gistId: string, token: string | null) => {
     if (!token) return;
@@ -72,24 +66,6 @@ const ListViewGists = () => {
       if (error) toast.error("Something Went Wrong ");
     }
   };
-
-  useEffect(() => {
-    const fetchGist = async () => {
-      const gist = await fetchGistById(searchQuery, user?.token); // Make sure to pass the token if needed
-      if (gist) {
-        setFilteredGist(gist);
-        setLoading(false);
-      } else {
-        setFilteredGist(null);
-      }
-    };
-    if (searchQuery) {
-      setLoading(true);
-      fetchGist();
-    } else {
-      setLoading(false);
-    }
-  }, [gists, searchQuery, user?.token]);
 
   const renderGistRow = (gist: Gist) => {
     if (!gist) return null;
@@ -169,14 +145,14 @@ const ListViewGists = () => {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
+          {gistLoading ? (
             <tr className="border-b hover:bg-gray-50 cursor-pointer border-l border-r">
               <Skeleton variant="text" width="400%" height="30%" />
               <Skeleton variant="text" width="500%" height="30%" />
               <Skeleton variant="text" width="600%" height="30%" />
             </tr>
-          ) : filteredGist ? (
-            renderGistRow(filteredGist)
+          ) : searchedGist ? (
+            renderGistRow(searchedGist)
           ) : (
             gists?.map(renderGistRow)
           )}

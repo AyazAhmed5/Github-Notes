@@ -1,18 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { publicGistInterface } from "../../utilities/types";
+import { Gist, publicGistInterface } from "../../utilities/types";
 
 interface GistState {
   gists: publicGistInterface[];
   loading: boolean;
+  gistLoading: boolean;
   page: number;
   searchQuery: string;
+  searchedGist: Gist | null;
 }
 
 const initialState: GistState = {
   gists: [],
   loading: false,
+  gistLoading: false,
   page: 1,
   searchQuery: "",
+  searchedGist: null,
 };
 
 const gistSlice = createSlice({
@@ -28,8 +32,14 @@ const gistSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+    setGistLoading: (state, action: PayloadAction<boolean>) => {
+      state.gistLoading = action.payload;
+    },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
+    },
+    setSearchedGist: (state, action: PayloadAction<Gist | null>) => {
+      state.searchedGist = action.payload;
     },
     setStarred: (
       state,
@@ -45,7 +55,14 @@ const gistSlice = createSlice({
   },
 });
 
-export const { setGists, setLoading, setPage, setStarred, setSearchQuery } =
-  gistSlice.actions;
+export const {
+  setGists,
+  setLoading,
+  setPage,
+  setStarred,
+  setSearchedGist,
+  setSearchQuery,
+  setGistLoading,
+} = gistSlice.actions;
 
 export default gistSlice.reducer;

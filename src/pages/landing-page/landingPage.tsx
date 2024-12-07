@@ -16,7 +16,7 @@ import { getPublicGists } from "../../utilities/utils";
 const LandingPage = () => {
   const [showGridView, setShowGridView] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { page } = useSelector((state: RootState) => state.gists);
+  const { page, searchedGist } = useSelector((state: RootState) => state.gists);
 
   useEffect(() => {
     const fetchGists = async () => {
@@ -84,8 +84,10 @@ const LandingPage = () => {
                 />
                 <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
                   Page
-                  <span className="border px-2 py-1 rounded-md">{page}</span>
-                  of 500
+                  <span className="border px-2 py-1 rounded-md">
+                    {searchedGist ? "1" : page}
+                  </span>
+                  of {searchedGist ? "1" : "500"}
                 </div>
                 <img
                   onClick={handleNextPage}
