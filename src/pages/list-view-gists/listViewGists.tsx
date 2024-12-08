@@ -17,7 +17,6 @@ import starIcon from "../../assets/images/star-icon.svg";
 
 const ListViewGists = () => {
   const dispatch = useDispatch();
-
   const { user, starredGists } = useSelector((state: RootState) => state.user);
   const { gists, searchedGist, gistLoading } = useSelector(
     (state: RootState) => state.gists
