@@ -1,22 +1,23 @@
-import { Box, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
+import { Box, Typography } from "@mui/material";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlined";
 
-import ListViewGists from "../list-view-gists/listViewGists";
-import leftIcon from "../../assets/images/leftIcon.svg";
-import rightIcon from "../../assets/images/righIcon.svg";
-import { useEffect, useState } from "react";
-import CardViewGists from "../card-view-gists/cardViewGists";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { setGists, setPage } from "../../store/gists/gists.slice";
 import { getPublicGists } from "../../utilities/utils";
+import CardViewGists from "../card-view-gists/cardViewGists";
+import ListViewGists from "../list-view-gists/listViewGists";
+import rightIcon from "../../assets/images/righIcon.svg";
+import leftIcon from "../../assets/images/leftIcon.svg";
 
 const LandingPage = () => {
-  const [showGridView, setShowGridView] = useState<boolean>(false);
   const dispatch = useDispatch();
   const { page, searchedGist } = useSelector((state: RootState) => state.gists);
+
+  const [showGridView, setShowGridView] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGists = async () => {

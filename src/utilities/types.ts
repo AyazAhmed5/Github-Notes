@@ -37,3 +37,19 @@ export interface Gist {
   created_at: string;
   updated_at: string;
 }
+
+export interface GistState {
+  gists: publicGistInterface[];
+  loading: boolean;
+  gistLoading: boolean;
+  page: number;
+  searchQuery: string;
+  searchedGist: Gist | null;
+}
+
+export interface UserState {
+  user: User;
+  userGithubProfile: string;
+  starredGists: Gist[];
+  trigger: boolean;
+}

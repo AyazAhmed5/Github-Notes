@@ -1,15 +1,25 @@
 import { useEffect, useState } from "react";
-import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
+import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
 
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebaseConfig";
+import { debounce } from "lodash";
+
+import { Divider, Typography } from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import Button from "@mui/material/Button";
+
+import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
+import { RootState } from "../../store/root-reducer";
 import {
   fetchGistById,
   fetchStarredGists,
   fetchUserProfile,
   LoginWithGithub,
 } from "../../utilities/utils";
-import { useDispatch } from "react-redux";
-import { debounce } from "lodash";
 import {
   setUser,
   selectIsLoggedIn,
@@ -17,29 +27,20 @@ import {
   setStarredGist,
   clearUser,
 } from "../../store/user/user.slice";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { auth } from "../../../firebaseConfig";
-import { signOut } from "firebase/auth";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/root-reducer";
-import { Divider, Typography } from "@mui/material";
 import {
   setGistLoading,
   setPage,
   setSearchedGist,
   setSearchQuery,
 } from "../../store/gists/gists.slice";
-import { Link } from "react-router-dom";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const { user, userGithubProfile, trigger } = useSelector(
     (state: RootState) => state.user
   );
   const { searchQuery } = useSelector((state: RootState) => state.gists);
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -56,36 +57,6 @@ const Header = () => {
   const handleLogoClick = () => {
     dispatch(setPage(1));
   };
-
-  useEffect(() => {
-    const fetchGist = async () => {
-      const gist = await fetchGistById(searchQuery, user?.token); // Make sure to pass the token if needed
-      if (gist) {
-        dispatch(setSearchedGist(gist));
-        dispatch(setGistLoading(false));
-      } else {
-        dispatch(setSearchedGist(null));
-        dispatch(setGistLoading(true));
-      }
-    };
-    if (searchQuery) {
-      dispatch(setGistLoading(true));
-      fetchGist();
-    } else {
-      dispatch(setGistLoading(false));
-      dispatch(setSearchedGist(null));
-    }
-  }, [dispatch, searchQuery, user?.token]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (user?.token) {
-        const gists = await fetchStarredGists(user.token);
-        dispatch(setStarredGist(gists));
-      }
-    };
-    fetchData();
-  }, [dispatch, user.token, trigger]);
 
   const handleLogin = async () => {
     const { user, token } = await LoginWithGithub();
@@ -132,6 +103,36 @@ const Header = () => {
 
     fetchGists();
   }, [dispatch, user]);
+
+  useEffect(() => {
+    const fetchGist = async () => {
+      const gist = await fetchGistById(searchQuery, user?.token); // Make sure to pass the token if needed
+      if (gist) {
+        dispatch(setSearchedGist(gist));
+        dispatch(setGistLoading(false));
+      } else {
+        dispatch(setSearchedGist(null));
+        dispatch(setGistLoading(true));
+      }
+    };
+    if (searchQuery) {
+      dispatch(setGistLoading(true));
+      fetchGist();
+    } else {
+      dispatch(setGistLoading(false));
+      dispatch(setSearchedGist(null));
+    }
+  }, [dispatch, searchQuery, user?.token]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.token) {
+        const gists = await fetchStarredGists(user.token);
+        dispatch(setStarredGist(gists));
+      }
+    };
+    fetchData();
+  }, [dispatch, user.token, trigger]);
 
   return (
     <nav className="navbar text-white">

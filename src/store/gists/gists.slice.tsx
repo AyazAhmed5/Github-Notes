@@ -1,14 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Gist, publicGistInterface } from "../../utilities/types";
-
-interface GistState {
-  gists: publicGistInterface[];
-  loading: boolean;
-  gistLoading: boolean;
-  page: number;
-  searchQuery: string;
-  searchedGist: Gist | null;
-}
+import { Gist, GistState, publicGistInterface } from "../../utilities/types";
 
 const initialState: GistState = {
   gists: [],

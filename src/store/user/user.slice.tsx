@@ -1,12 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Gist, User } from "../../utilities/types";
-
-interface UserState {
-  user: User;
-  userGithubProfile: string;
-  starredGists: Gist[];
-  trigger: boolean;
-}
+import { Gist, User, UserState } from "../../utilities/types";
 
 const initialState: UserState = {
   user: {

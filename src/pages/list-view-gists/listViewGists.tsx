@@ -1,32 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ForkIcon from "../../assets/images/forkIcon.svg";
-import starIcon from "../../assets/images/star-icon.svg";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import { CircularProgress, Popover, Skeleton, Typography } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/root-reducer";
-import { forkGist, formatTimeAgo, starGist } from "../../utilities/utils";
 import { toast } from "react-toastify";
-import { CircularProgress, Popover, Skeleton, Typography } from "@mui/material";
-import { useState } from "react";
+import { RootState } from "../../store/root-reducer";
 import { setStarred } from "../../store/gists/gists.slice";
-import { Gist } from "../../utilities/types";
 import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
+import { forkGist, formatTimeAgo, starGist } from "../../utilities/utils";
+import { Gist } from "../../utilities/types";
+
+import ForkIcon from "../../assets/images/forkIcon.svg";
+import starIcon from "../../assets/images/star-icon.svg";
 
 const ListViewGists = () => {
+  const dispatch = useDispatch();
+
+  const { user, starredGists } = useSelector((state: RootState) => state.user);
   const { gists, searchedGist, gistLoading } = useSelector(
     (state: RootState) => state.gists
   );
   const isLoggedIn = useSelector(selectIsLoggedIn);
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const open = Boolean(anchorEl);
-  const dispatch = useDispatch();
-  const { user, starredGists } = useSelector((state: RootState) => state.user);
-
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { fork: boolean; star: boolean };
   }>({});
+
+  const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);

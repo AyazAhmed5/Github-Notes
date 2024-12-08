@@ -1,4 +1,6 @@
-// import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import {
   Box,
   Card,
@@ -9,43 +11,40 @@ import {
   CircularProgress,
   Popover,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import StarIcon from "@mui/icons-material/Star";
 
-import ForkIcon from "../../assets/images/forkIcon.svg";
-import starIcon from "../../assets/images/star-icon.svg";
-
 import { RootState } from "../../store/root-reducer";
+import { Gist } from "../../utilities/types";
 import {
   fetchGistDetails,
   forkGist,
   formatCreatedAt,
   starGist,
 } from "../../utilities/utils";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { setStarred } from "../../store/gists/gists.slice";
-import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
-import { Gist } from "../../utilities/types";
 import { setLoading } from "../../store/gists/gists.slice";
+import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
+import ForkIcon from "../../assets/images/forkIcon.svg";
+import starIcon from "../../assets/images/star-icon.svg";
 
 const CardViewGists = () => {
+  const dispatch = useDispatch();
   const { gists, loading, gistLoading, searchedGist } = useSelector(
     (state: RootState) => state.gists
   );
   const { user, starredGists } = useSelector((state: RootState) => state.user);
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { fork: boolean; star: boolean };
   }>({});
-
-  const dispatch = useDispatch();
   const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
     {}
   );
+
+  const open = Boolean(anchorEl);
+
   useEffect(() => {
     const fetchContents = async () => {
       dispatch(setLoading(true));
