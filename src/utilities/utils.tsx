@@ -42,6 +42,7 @@ export const fetchGistById = async (
     }
 
     const gist = await response.json();
+
     if (gist) {
       return gist;
     } else {
@@ -147,7 +148,8 @@ export const fetchUserProfile = async (token: string) => {
 
 export const getPublicGists = async (
   page: number,
-  count: number
+  count: number,
+  token: string | null
 ): Promise<publicGistInterface[] | null> => {
   try {
     const response = await fetch(
@@ -155,6 +157,7 @@ export const getPublicGists = async (
       {
         headers: {
           "X-GitHub-Api-Version": "2022-11-28",
+          Authorization: token ? `token ${token}` : "",
         },
       }
     );
@@ -170,12 +173,24 @@ export const getPublicGists = async (
   }
 };
 
-export const fetchGistDetails = async (gistId: string) => {
-  const response = await fetch(`https://api.github.com/gists/${gistId}`);
-  const data = await response.json();
-
-  const file = data.files[Object.keys(data.files)[0]];
-  return file?.content;
+export const fetchGistDetails = async (
+  gistId: string,
+  token: string | null
+) => {
+  try {
+    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    const file = data.files[Object.keys(data.files)[0]];
+    return file?.content;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const formatTimeAgo = (timestamp: string): string => {

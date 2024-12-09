@@ -16,17 +16,18 @@ import leftIcon from "../../assets/images/leftIcon.svg";
 const LandingPage = () => {
   const dispatch = useDispatch();
   const { page, searchedGist } = useSelector((state: RootState) => state.gists);
+  const { user } = useSelector((state: RootState) => state.user);
 
   const [showGridView, setShowGridView] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGists = async () => {
-      const data = await getPublicGists(page, 6);
+      const data = await getPublicGists(page, 6, user.token);
       if (data) dispatch(setGists(data));
     };
 
     fetchGists();
-  }, [dispatch, page]);
+  }, [dispatch, page, user.token]);
 
   const handlePreviousPage = () => {
     if (page > 1) {

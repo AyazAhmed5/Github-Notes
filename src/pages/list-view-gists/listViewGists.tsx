@@ -14,9 +14,11 @@ import { Gist } from "../../utilities/types";
 
 import ForkIcon from "../../assets/images/forkIcon.svg";
 import starIcon from "../../assets/images/star-icon.svg";
+import { useNavigate } from "react-router";
 
 const ListViewGists = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user, starredGists } = useSelector((state: RootState) => state.user);
   const { gists, searchedGist, gistLoading } = useSelector(
     (state: RootState) => state.gists
@@ -88,6 +90,7 @@ const ListViewGists = () => {
       <tr
         key={gist.id}
         className="border-b hover:bg-gray-50 cursor-pointer border-l border-r"
+        onClick={() => navigate(`/public-gist-view/${gist.id}`)} // Navigate on row click
       >
         <td className="p-3 flex items-center gap-2">
           <img
@@ -113,6 +116,7 @@ const ListViewGists = () => {
         <td className="p-3 flex items-center justify-end">
           <button
             onClick={(e) => {
+              e.stopPropagation();
               if (isLoggedIn) {
                 handleForkClick(gist.id, user?.token);
               } else {
@@ -129,6 +133,7 @@ const ListViewGists = () => {
           </button>
           <button
             onClick={(e) => {
+              e.stopPropagation();
               if (isLoggedIn) {
                 handleStarClick(gist.id, user?.token);
               } else {

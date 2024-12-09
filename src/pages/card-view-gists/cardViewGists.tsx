@@ -26,6 +26,7 @@ import { setLoading } from "../../store/gists/gists.slice";
 import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 import ForkIcon from "../../assets/images/forkIcon.svg";
 import starIcon from "../../assets/images/star-icon.svg";
+import { Link } from "react-router";
 
 const CardViewGists = () => {
   const dispatch = useDispatch();
@@ -50,7 +51,7 @@ const CardViewGists = () => {
       dispatch(setLoading(true));
       const contents: { [key: string]: string } = {};
       for (const gist of gists) {
-        const content = await fetchGistDetails(gist.id);
+        const content = await fetchGistDetails(gist.id, user.token);
         contents[gist.id] = content;
       }
       setGistContents(contents);
@@ -60,7 +61,7 @@ const CardViewGists = () => {
     if (gists.length > 0) {
       fetchContents();
     }
-  }, [dispatch, gists]);
+  }, [dispatch, gists, user.token]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -112,123 +113,127 @@ const CardViewGists = () => {
   const cardRenderer = (gist: Gist, temp?: boolean) => {
     if (!gist) return null;
     return (
-      <Card
-        key={gist.id}
-        className={`${temp ? "w-[100%]" : "w-[385px]"} h-[280px] ${temp ? "" : "max-w-[390px]"} max-h-[290px] rounded-md shadow-md card cursor-pointer`}
-      >
-        <Box
-          className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center  flex-col"
-          style={{ height: "140px" }}
+      <Link to={`/public-gist-view/${gist.id}`}>
+        <Card
+          key={gist.id}
+          className={`${temp ? "w-[100%]" : "w-[385px]"} h-[280px] ${temp ? "" : "max-w-[390px]"} max-h-[290px] rounded-md shadow-md card cursor-pointer`}
         >
-          {loading ? (
-            <>
-              <Skeleton variant="text" width="50%" height="30%" />
-              <Skeleton variant="text" width="80%" height="30%" />
-              <Skeleton variant="text" width="100%" height="30%" />
-            </>
-          ) : (
-            <pre
-              className="text-[12px] leading-[1.4] overflow-auto w-full max-h-full"
-              style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-            >
-              {gistContents[gist.id]
-                ? gistContents[gist.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
-                : "No preview available"}
-            </pre>
-          )}
-        </Box>
-        <CardContent className="flex items-start p-4 gap-4  relative">
-          <Avatar
-            src={gist.owner.avatar_url}
-            alt="User Photo"
-            className="w-12 h-12"
-          />
-          <Box>
-            <Typography
-              variant="subtitle1"
-              className="!text-[14px] !leading-8 mt-1 truncate w-[80%]"
-            >
-              <span className="mt-1 truncate w-[60%]">{gist.owner.login}</span>
-              {Object.values(gist.files)[0]?.filename && (
-                <>
-                  {" / "}
-                  <span className="!font-semibold">
-                    {Object.values(gist.files)[0]?.filename}
-                  </span>
-                </>
-              )}
-            </Typography>
-            <Typography variant="body2" className="text-[#7A7A7A]">
-              {formatCreatedAt(gist.created_at)}
-            </Typography>
-            <Typography
-              variant="body2"
-              className="text-[#7A7A7A] mt-1 truncate w-[60%]"
-            >
-              {gist.description}
-            </Typography>
-            <div className="p-3 flex items-center justify-end card-lower-icons">
-              <button
-                onClick={(e) => {
-                  if (isLoggedIn) {
-                    handleForkClick(gist.id, user?.token);
-                  } else {
-                    handleClick(e);
-                  }
-                }}
-                className="p-3 hover:bg-gray-200 rounded-full"
+          <Box
+            className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center  flex-col"
+            style={{ height: "140px" }}
+          >
+            {loading ? (
+              <>
+                <Skeleton variant="text" width="50%" height="30%" />
+                <Skeleton variant="text" width="80%" height="30%" />
+                <Skeleton variant="text" width="100%" height="30%" />
+              </>
+            ) : (
+              <pre
+                className="text-[12px] leading-[1.4] overflow-auto w-full max-h-full"
+                style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
               >
-                {loadingStates[gist.id]?.fork ? (
-                  <CircularProgress className="!text-[#003B44]" size={20} />
-                ) : (
-                  <img
-                    src={ForkIcon}
-                    className="fork-star-icon"
-                    alt="fork-icon"
-                  />
-                )}
-              </button>
-              <button
-                onClick={(e) => {
-                  if (isLoggedIn) {
-                    handleStarClick(gist.id, user?.token);
-                  } else {
-                    handleClick(e);
-                  }
-                }}
-                className="p-3 hover:bg-gray-200 rounded-full"
-              >
-                {loadingStates[gist.id]?.star ? (
-                  <CircularProgress className="!text-[#003B44]" size={20} />
-                ) : starredGists.some(
-                    (starredGist: Gist) => starredGist.id === gist.id
-                  ) ? (
-                  <StarIcon />
-                ) : (
-                  <img
-                    src={starIcon}
-                    className="fork-star-icon"
-                    alt="filled-star"
-                  />
-                )}
-              </button>
-              <Popover
-                open={open}
-                anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-              >
-                <Typography sx={{ p: 2 }}>
-                  Please login first in order to perform this action!!
-                </Typography>
-              </Popover>
-            </div>
+                {gistContents[gist.id]
+                  ? gistContents[gist.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
+                  : "No preview available"}
+              </pre>
+            )}
           </Box>
-        </CardContent>
-      </Card>
+          <CardContent className="flex items-start p-4 gap-4  relative">
+            <Avatar
+              src={gist.owner.avatar_url}
+              alt="User Photo"
+              className="w-12 h-12"
+            />
+            <Box>
+              <Typography
+                variant="subtitle1"
+                className="!text-[14px] !leading-8 mt-1 truncate w-[80%]"
+              >
+                <span className="mt-1 truncate w-[60%]">
+                  {gist.owner.login}
+                </span>
+                {Object.values(gist.files)[0]?.filename && (
+                  <>
+                    {" / "}
+                    <span className="!font-semibold">
+                      {Object.values(gist.files)[0]?.filename}
+                    </span>
+                  </>
+                )}
+              </Typography>
+              <Typography variant="body2" className="text-[#7A7A7A]">
+                {formatCreatedAt(gist.created_at)}
+              </Typography>
+              <Typography
+                variant="body2"
+                className="text-[#7A7A7A] mt-1 truncate w-[60%]"
+              >
+                {gist.description}
+              </Typography>
+              <div className="p-3 flex items-center justify-end card-lower-icons">
+                <button
+                  onClick={(e) => {
+                    if (isLoggedIn) {
+                      handleForkClick(gist.id, user?.token);
+                    } else {
+                      handleClick(e);
+                    }
+                  }}
+                  className="p-3 hover:bg-gray-200 rounded-full"
+                >
+                  {loadingStates[gist.id]?.fork ? (
+                    <CircularProgress className="!text-[#003B44]" size={20} />
+                  ) : (
+                    <img
+                      src={ForkIcon}
+                      className="fork-star-icon"
+                      alt="fork-icon"
+                    />
+                  )}
+                </button>
+                <button
+                  onClick={(e) => {
+                    if (isLoggedIn) {
+                      handleStarClick(gist.id, user?.token);
+                    } else {
+                      handleClick(e);
+                    }
+                  }}
+                  className="p-3 hover:bg-gray-200 rounded-full"
+                >
+                  {loadingStates[gist.id]?.star ? (
+                    <CircularProgress className="!text-[#003B44]" size={20} />
+                  ) : starredGists.some(
+                      (starredGist: Gist) => starredGist.id === gist.id
+                    ) ? (
+                    <StarIcon />
+                  ) : (
+                    <img
+                      src={starIcon}
+                      className="fork-star-icon"
+                      alt="filled-star"
+                    />
+                  )}
+                </button>
+                <Popover
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={() => setAnchorEl(null)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                >
+                  <Typography sx={{ p: 2 }}>
+                    Please login first in order to perform this action!!
+                  </Typography>
+                </Popover>
+              </div>
+            </Box>
+          </CardContent>
+        </Card>
+      </Link>
     );
   };
 

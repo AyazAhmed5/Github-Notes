@@ -7,6 +7,7 @@ export interface publicGistInterface {
   owner: { login: string; avatar_url: string };
   updated_at: string;
   isStarred: boolean;
+  forks: [];
   files: {
     [fileName: string]: {
       filename: string;
@@ -36,6 +37,7 @@ export interface Gist {
   description: string;
   created_at: string;
   updated_at: string;
+  forks: [];
 }
 
 export interface GistState {
