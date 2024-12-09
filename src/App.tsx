@@ -29,7 +29,7 @@ function App() {
           <Route path="/public-gist-view/:id" element={<PublicGistView />} />
         </Routes>
         <ToastContainer
-          autoClose={5000}
+          autoClose={3000}
           hideProgressBar={true}
           newestOnTop={true}
           theme="light"

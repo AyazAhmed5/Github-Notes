@@ -1,14 +1,16 @@
 import { useState } from "react";
-import deleteIcon from "../../assets/delete-icon.svg";
+import deleteIcon from "../../assets/images/delete-icon.svg";
 import { Box } from "@mui/material";
 import { createGist } from "../../utilities/utils";
 import { toast } from "react-toastify";
 import { RootState } from "../../store/root-reducer";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 const CreateGists = () => {
   const [description, setDescription] = useState("");
   const { user } = useSelector((state: RootState) => state.user);
+  const navigate = useNavigate();
 
   const [files, setFiles] = useState<{ name: string; content: string }[]>([
     { name: "", content: "" },
@@ -42,7 +44,7 @@ const CreateGists = () => {
       files.length === 0 ||
       files.some((file) => !file.name || !file.content)
     ) {
-      toast.warn("Please add a Filename.");
+      toast.warn("Please make sure you have both filename and filecontent");
       return;
     }
 
@@ -55,9 +57,10 @@ const CreateGists = () => {
       const newGist = await createGist(description, filesPayload, user.token);
 
       if (newGist) {
-        toast.success("Gist Created Successfully! 🚀");
+        toast.success("Gist Created Successfully!🚀");
         setDescription("");
         setFiles([{ name: "", content: "" }]);
+        navigate("/user-profile");
       } else {
         toast.error("Something Went Wrong!");
       }

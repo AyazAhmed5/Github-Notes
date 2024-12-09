@@ -52,6 +52,7 @@ export interface GistState {
 export interface UserState {
   user: User;
   userGithubProfile: string;
+  githubUserName: string;
   starredGists: Gist[];
   trigger: boolean;
 }

@@ -54,6 +54,41 @@ export const fetchGistById = async (
   }
 };
 
+export const fetchGistsByUser = async (
+  username: string,
+  token: string | null,
+  page: number = 1,
+  perPage: number = 10
+): Promise<Gist[] | null> => {
+  if (!username) {
+    console.error("Username is required to fetch gists.");
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/users/${username}/gists?page=${page}&per_page=${perPage}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token ? `token ${token}` : "",
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error fetching gists: ${response.statusText}`);
+    }
+
+    const gists = await response.json();
+    return gists;
+  } catch (error) {
+    console.error("Error fetching gists:", error);
+    return null;
+  }
+};
+
 export const createGist = async (
   description: string,
   files: Record<string, { content: string }>,
@@ -179,7 +214,7 @@ export const fetchUserProfile = async (token: string) => {
 
   const userData = await response.json();
 
-  return userData.html_url;
+  return userData;
 };
 
 export const getPublicGists = async (

@@ -26,6 +26,7 @@ import {
   setUserGithubProfile,
   setStarredGist,
   clearUser,
+  setGithubUserName,
 } from "../../store/user/user.slice";
 import {
   setGistLoading,
@@ -99,7 +100,8 @@ const Header = () => {
     const fetchGists = async () => {
       if (!user.token) return;
       const data = await fetchUserProfile(user.token);
-      dispatch(setUserGithubProfile(data));
+      dispatch(setGithubUserName(data.login));
+      dispatch(setUserGithubProfile(data.html_url));
     };
 
     fetchGists();
@@ -202,12 +204,12 @@ const Header = () => {
                   </Typography>
                 </MenuItem>
                 <Divider />
-
-                <MenuItem onClick={handleClose}>Your gists</MenuItem>
+                <Link to={"/user-profile"}>
+                  <MenuItem onClick={handleClose}>Your gists</MenuItem>
+                </Link>
                 <Link to={"/create-gists"}>
                   <MenuItem onClick={handleClose}>Create gist</MenuItem>
                 </Link>
-                <MenuItem onClick={handleClose}>Starred gists</MenuItem>
                 <a href={userGithubProfile} target="blank">
                   <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
                 </a>
@@ -308,7 +310,6 @@ const Header = () => {
                 <Link to={"/create-gists"}>
                   <MenuItem>Create gist</MenuItem>
                 </Link>
-                <MenuItem onClick={handleClose}>Starred gists</MenuItem>
                 <a href={userGithubProfile} target="blank">
                   <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
                 </a>
