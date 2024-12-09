@@ -54,6 +54,42 @@ export const fetchGistById = async (
   }
 };
 
+export const createGist = async (
+  description: string,
+  files: Record<string, { content: string }>,
+  token: string | null
+): Promise<Gist | null> => {
+  if (!description || Object.keys(files).length === 0) {
+    return null;
+  }
+
+  try {
+    const response = await fetch("https://api.github.com/gists", {
+      method: "POST",
+      headers: {
+        Authorization: token ? `token ${token}` : "",
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        description,
+        files,
+        public: true,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error creating gist: ${response.statusText}`);
+    }
+
+    const newGist = await response.json();
+    return newGist;
+  } catch (error) {
+    console.error("Error creating gist:", error);
+    return null;
+  }
+};
+
 export const forkGist = async (gistId: string, token: string) => {
   try {
     const response = await fetch(

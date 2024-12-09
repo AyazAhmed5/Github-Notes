@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -36,6 +36,7 @@ import {
 
 const Header = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { user, userGithubProfile, trigger } = useSelector(
     (state: RootState) => state.user
   );
@@ -152,7 +153,12 @@ const Header = () => {
             <input
               type="text"
               placeholder="Search gists..."
-              onChange={debouncedSearchQuery}
+              onChange={(e) => {
+                e.stopPropagation();
+                if (location.pathname === "/") {
+                  debouncedSearchQuery(e);
+                }
+              }}
               className="w-64 pl-10 pr-4 py-2 border border-[#FFFFFF80] text-white bg-[#003b44] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#005f67]"
             />
           </div>
@@ -198,6 +204,9 @@ const Header = () => {
                 <Divider />
 
                 <MenuItem onClick={handleClose}>Your gists</MenuItem>
+                <Link to={"/create-gists"}>
+                  <MenuItem onClick={handleClose}>Create gist</MenuItem>
+                </Link>
                 <MenuItem onClick={handleClose}>Starred gists</MenuItem>
                 <a href={userGithubProfile} target="blank">
                   <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
@@ -296,6 +305,9 @@ const Header = () => {
                 <Divider />
 
                 <MenuItem onClick={handleClose}>Your gists</MenuItem>
+                <Link to={"/create-gists"}>
+                  <MenuItem>Create gist</MenuItem>
+                </Link>
                 <MenuItem onClick={handleClose}>Starred gists</MenuItem>
                 <a href={userGithubProfile} target="blank">
                   <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
