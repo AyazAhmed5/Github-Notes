@@ -62,7 +62,7 @@ const PublicGistView = () => {
               }}
             />
             <Avatar
-              src={selectedGist.owner.avatar_url}
+              src={selectedGist?.owner?.avatar_url}
               alt="User Photo"
               className="w-12 h-12"
             />
@@ -72,21 +72,21 @@ const PublicGistView = () => {
               variant="subtitle1"
               className="!text-[14px] !leading-8 mt-1"
             >
-              <span className="mt-1 ">{selectedGist.owner.login}</span>
+              <span className="mt-1 ">{selectedGist?.owner?.login}</span>
               {Object.values(selectedGist.files)[0]?.filename && (
                 <>
                   {" / "}
                   <span className="!font-semibold">
-                    {Object.values(selectedGist.files)[0]?.filename}
+                    {Object.values(selectedGist?.files)[0]?.filename}
                   </span>
                 </>
               )}
             </Typography>
             <Typography variant="body2" className="text-[#7A7A7A]">
-              {formatCreatedAt(selectedGist.created_at)}
+              {formatCreatedAt(selectedGist?.created_at)}
             </Typography>
             <Typography variant="body2" className="text-[#7A7A7A] mt-1 ">
-              {selectedGist.description}
+              {selectedGist?.description}
             </Typography>
           </Box>
         </Box>
@@ -98,7 +98,7 @@ const PublicGistView = () => {
                 Fork
               </Typography>
             </Box>
-            <Box className={`icon-box`}> {selectedGist.forks.length || 0}</Box>
+            <Box className={`icon-box`}>{selectedGist?.forks?.length || 0}</Box>
           </div>
           <div className="fork-star-container">
             <Box className={`fork-star-icon-box`}>
@@ -121,8 +121,8 @@ const PublicGistView = () => {
           className="!text-[14px] !leading-8 mt-1"
         >
           <span className="mt-1 pl-2">
-            {Object.values(selectedGist.files)[0]?.filename && (
-              <>{Object.values(selectedGist.files)[0]?.filename}</>
+            {Object.values(selectedGist?.files)[0]?.filename && (
+              <>{Object.values(selectedGist?.files)[0]?.filename}</>
             )}
           </span>
         </Typography>

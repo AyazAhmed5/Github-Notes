@@ -12,6 +12,7 @@ const initialState: UserState = {
   starredGists: [],
   userGithubProfile: "",
   githubUserName: "",
+  userGistsCount: 0,
   trigger: false,
 };
 
@@ -24,6 +25,9 @@ const userSlice = createSlice({
     },
     setUserGithubProfile: (state, action: PayloadAction<string>) => {
       state.userGithubProfile = action.payload;
+    },
+    setUserGistsCount: (state, action: PayloadAction<number>) => {
+      state.userGistsCount = action.payload;
     },
     setGithubUserName: (state, action: PayloadAction<string>) => {
       state.githubUserName = action.payload;
@@ -45,6 +49,7 @@ export const {
   clearUser,
   setStarredGist,
   setUserGithubProfile,
+  setUserGistsCount,
   setGithubUserName,
   setTrigger,
 } = userSlice.actions;

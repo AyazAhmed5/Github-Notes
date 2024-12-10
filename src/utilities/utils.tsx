@@ -56,9 +56,9 @@ export const fetchGistById = async (
 
 export const fetchGistsByUser = async (
   username: string,
-  token: string | null,
-  page: number = 1,
-  perPage: number = 10
+  token: string,
+  page?: number,
+  perPage?: number
 ): Promise<Gist[] | null> => {
   if (!username) {
     console.error("Username is required to fetch gists.");
@@ -66,16 +66,18 @@ export const fetchGistsByUser = async (
   }
 
   try {
-    const response = await fetch(
-      `https://api.github.com/users/${username}/gists?page=${page}&per_page=${perPage}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: token ? `token ${token}` : "",
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
+    let url = `https://api.github.com/users/${username}/gists`;
+    if (page !== undefined && perPage !== undefined) {
+      url += `?page=${page}&per_page=${perPage}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Error fetching gists: ${response.statusText}`);
@@ -92,7 +94,7 @@ export const fetchGistsByUser = async (
 export const createGist = async (
   description: string,
   files: Record<string, { content: string }>,
-  token: string | null
+  token: string
 ): Promise<Gist | null> => {
   if (!description || Object.keys(files).length === 0) {
     return null;
@@ -102,7 +104,7 @@ export const createGist = async (
     const response = await fetch("https://api.github.com/gists", {
       method: "POST",
       headers: {
-        Authorization: token ? `token ${token}` : "",
+        Authorization: `token ${token}`,
         Accept: "application/vnd.github.v3+json",
         "Content-Type": "application/json",
       },
@@ -206,15 +208,19 @@ export const fetchStarredGists = async (
 };
 
 export const fetchUserProfile = async (token: string) => {
-  const response = await fetch("https://api.github.com/user", {
-    headers: {
-      Authorization: `token ${token}`,
-    },
-  });
+  try {
+    const response = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `token ${token}`,
+      },
+    });
 
-  const userData = await response.json();
+    const userData = await response.json();
 
-  return userData;
+    return userData;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const getPublicGists = async (
@@ -246,13 +252,13 @@ export const getPublicGists = async (
 
 export const fetchGistDetails = async (
   gistId: string,
-  token: string | null
+  token?: string | null
 ) => {
   try {
     const response = await fetch(`https://api.github.com/gists/${gistId}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+        Authorization: `Bearer ${token}`, //Remove This
         "Content-Type": "application/json",
       },
     });

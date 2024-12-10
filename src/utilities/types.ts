@@ -37,14 +37,16 @@ export interface Gist {
   description: string;
   created_at: string;
   updated_at: string;
+  isStarred: boolean;
   forks: [];
 }
 
 export interface GistState {
-  gists: publicGistInterface[];
+  gists: publicGistInterface[] | Gist[];
   loading: boolean;
   gistLoading: boolean;
   page: number;
+
   searchQuery: string;
   searchedGist: Gist | null;
 }
@@ -54,5 +56,6 @@ export interface UserState {
   userGithubProfile: string;
   githubUserName: string;
   starredGists: Gist[];
+  userGistsCount: number;
   trigger: boolean;
 }

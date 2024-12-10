@@ -27,20 +27,25 @@ import rightIcon from "../../assets/images/righIcon.svg";
 import leftIcon from "../../assets/images/leftIcon.svg";
 
 const UserProfile = () => {
-  const { user, userGithubProfile, githubUserName, starredGists } = useSelector(
-    (state: RootState) => state.user
-  );
-  const { page } = useSelector((state: RootState) => state.gists);
   const dispatch = useDispatch();
+  const {
+    user,
+    userGithubProfile,
+    githubUserName,
+    starredGists,
+    userGistsCount,
+  } = useSelector((state: RootState) => state.user);
+  const { page } = useSelector((state: RootState) => state.gists);
+
   const [gists, setGists] = useState<Gist[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: { star: boolean };
   }>({});
-
   const [gistContents, setGistContents] = useState<{ [key: string]: string }>(
     {}
   );
+  const totalNumberOfPages = Math.ceil(userGistsCount / 2);
 
   useEffect(() => {
     const fetchContents = async () => {
@@ -94,6 +99,8 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fetchGists = async () => {
+      if (!user.token) return;
+
       try {
         setLoading(true);
 
@@ -234,7 +241,7 @@ const UserProfile = () => {
           <Box className="flex  gap-2 items-center">
             <Typography className="!text-[25px] ">All Gist</Typography>
             <Typography className="bg-green-900 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
-              {gists.length}
+              {userGistsCount}
             </Typography>
           </Box>
           {gists?.slice(0, 2).map((gist) => cardRenderer(gist))}
@@ -256,7 +263,7 @@ const UserProfile = () => {
                 <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
                   Page
                   <span className="border px-2 py-1 rounded-md">{page}</span>
-                  of {gists.length / 2}
+                  of {totalNumberOfPages}
                 </div>
                 <img
                   onClick={handleNextPage}

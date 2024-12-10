@@ -40,6 +40,10 @@ const CreateGists = () => {
 
       return;
     }
+    if (!user.token) {
+      toast.warn("Please Login First in order to Create A gist");
+      return;
+    }
     if (
       files.length === 0 ||
       files.some((file) => !file.name || !file.content)

@@ -88,22 +88,22 @@ const ListViewGists = () => {
 
     return (
       <tr
-        key={gist.id}
+        key={gist?.id}
         className="border-b hover:bg-gray-50 cursor-pointer border-l border-r"
         onClick={() => navigate(`/public-gist-view/${gist.id}`)} // Navigate on row click
       >
         <td className="p-3 flex items-center gap-2">
           <img
-            src={gist.owner.avatar_url}
+            src={gist?.owner?.avatar_url}
             alt="John Doe"
             className="w-10 h-10 rounded-full"
           />
-          <span className="table-data">{gist.owner.login}</span>
+          <span className="table-data">{gist?.owner?.login}</span>
         </td>
         <td className="p-3 table-data ]">
-          {Object.values(gist.files)[0]?.filename && (
+          {Object.values(gist?.files)[0]?.filename && (
             <span className="truncate w-[200px] inline-block">
-              {Object.values(gist.files)[0]?.filename}
+              {Object.values(gist?.files)[0]?.filename}
             </span>
           )}
         </td>
@@ -112,7 +112,7 @@ const ListViewGists = () => {
             Keyword
           </span>
         </td>
-        <td className="p-3 table-data">{formatTimeAgo(gist.updated_at)}</td>
+        <td className="p-3 table-data">{formatTimeAgo(gist?.updated_at)}</td>
         <td className="p-3 flex items-center justify-end">
           <button
             onClick={(e) => {
@@ -125,7 +125,7 @@ const ListViewGists = () => {
             }}
             className="p-3 hover:bg-gray-200 rounded-full"
           >
-            {loadingStates[gist.id]?.fork ? (
+            {loadingStates[gist?.id]?.fork ? (
               <CircularProgress className="!text-[#003B44]" size={20} />
             ) : (
               <img src={ForkIcon} className="fork-star-icon" alt="fork-icon" />
@@ -135,14 +135,14 @@ const ListViewGists = () => {
             onClick={(e) => {
               e.stopPropagation();
               if (isLoggedIn) {
-                handleStarClick(gist.id, user?.token);
+                handleStarClick(gist?.id, user?.token);
               } else {
                 handleClick(e);
               }
             }}
             className="p-3 hover:bg-gray-200 rounded-full"
           >
-            {loadingStates[gist.id]?.star ? (
+            {loadingStates[gist?.id]?.star ? (
               <CircularProgress className="!text-[#003B44]" size={20} />
             ) : isStarred ? (
               <StarIcon />

@@ -16,6 +16,7 @@ import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
 import { RootState } from "../../store/root-reducer";
 import {
   fetchGistById,
+  fetchGistsByUser,
   fetchStarredGists,
   fetchUserProfile,
   LoginWithGithub,
@@ -27,6 +28,8 @@ import {
   setStarredGist,
   clearUser,
   setGithubUserName,
+  setUserGistsCount,
+  setTrigger,
 } from "../../store/user/user.slice";
 import {
   setGistLoading,
@@ -38,7 +41,7 @@ import {
 const Header = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { user, userGithubProfile, trigger } = useSelector(
+  const { user, userGithubProfile, trigger, githubUserName } = useSelector(
     (state: RootState) => state.user
   );
   const { searchQuery } = useSelector((state: RootState) => state.gists);
@@ -58,6 +61,7 @@ const Header = () => {
   };
   const handleLogoClick = () => {
     dispatch(setPage(1));
+    dispatch(setTrigger());
   };
 
   const handleLogin = async () => {
@@ -93,6 +97,11 @@ const Header = () => {
       dispatch(setSearchQuery(""));
     }
   };
+  // const handleStarredClick = () => {
+  //   setAnchorEl(null);
+
+  //   dispatch(setGists(starredGists));
+  // };
 
   const debouncedSearchQuery = debounce(handleSearchQuery, 500);
 
@@ -102,10 +111,15 @@ const Header = () => {
       const data = await fetchUserProfile(user.token);
       dispatch(setGithubUserName(data.login));
       dispatch(setUserGithubProfile(data.html_url));
+
+      const fetchedGists = await fetchGistsByUser(githubUserName, user.token);
+      if (fetchedGists) {
+        dispatch(setUserGistsCount(fetchedGists.length));
+      }
     };
 
     fetchGists();
-  }, [dispatch, user]);
+  }, [dispatch, githubUserName, user]);
 
   useEffect(() => {
     const fetchGist = async () => {
@@ -210,6 +224,15 @@ const Header = () => {
                 <Link to={"/create-gists"}>
                   <MenuItem onClick={handleClose}>Create gist</MenuItem>
                 </Link>
+                {/* <Link to={"/starredGists"}>
+                  <MenuItem
+                    onClick={() => {
+                      handleStarredClick();
+                    }}
+                  >
+                    Starred gists
+                  </MenuItem>
+                </Link> */}
                 <a href={userGithubProfile} target="blank">
                   <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
                 </a>
@@ -252,7 +275,6 @@ const Header = () => {
       </div>
 
       {/*Mobile View */}
-
       {isOpen && (
         <div className="md:hidden w-full bg-[#003B44] flex  items-center space-y-4 mt-4">
           <div className="relative w-full px-4">

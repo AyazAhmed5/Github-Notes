@@ -12,11 +12,13 @@ import CardViewGists from "../card-view-gists/cardViewGists";
 import ListViewGists from "../list-view-gists/listViewGists";
 import rightIcon from "../../assets/images/righIcon.svg";
 import leftIcon from "../../assets/images/leftIcon.svg";
+import { useLocation } from "react-router";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { page, searchedGist } = useSelector((state: RootState) => state.gists);
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, trigger } = useSelector((state: RootState) => state.user);
 
   const [showGridView, setShowGridView] = useState<boolean>(false);
 
@@ -27,7 +29,7 @@ const LandingPage = () => {
     };
 
     fetchGists();
-  }, [dispatch, page, user.token]);
+  }, [dispatch, page, user.token, trigger]);
 
   const handlePreviousPage = () => {
     if (page > 1) {
@@ -42,7 +44,11 @@ const LandingPage = () => {
   return (
     <div className="layout">
       <div className="mb-4 flex justify-between items-center">
-        <Typography className="!text-2xl !mb-2">Public Gists</Typography>
+        <Typography className="!text-2xl !mb-2">
+          {location.pathname === "/starredGists"
+            ? "Starred Gists"
+            : "Public Gists"}
+        </Typography>
         <div className="filters-container">
           <Box
             className={`icon-box ${!showGridView ? "" : " bg-[#E3E3E3]"}  cursor-pointer`}

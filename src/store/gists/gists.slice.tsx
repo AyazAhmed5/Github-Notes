@@ -14,7 +14,10 @@ const gistSlice = createSlice({
   name: "gists",
   initialState,
   reducers: {
-    setGists: (state, action: PayloadAction<publicGistInterface[]>) => {
+    setGists: (
+      state,
+      action: PayloadAction<publicGistInterface[] | Gist[]>
+    ) => {
       state.gists = action.payload;
     },
     setPage: (state, action: PayloadAction<number>) => {
@@ -32,6 +35,7 @@ const gistSlice = createSlice({
     setSearchedGist: (state, action: PayloadAction<Gist | null>) => {
       state.searchedGist = action.payload;
     },
+
     setStarred: (
       state,
       action: PayloadAction<{ gistId: string; isStarred: boolean }>

@@ -24,6 +24,7 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          {/* <Route path="/starredGists" element={<LandingPage />} />*/}
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/create-gists" element={<CreateGists />} />
           <Route path="/public-gist-view/:id" element={<PublicGistView />} />

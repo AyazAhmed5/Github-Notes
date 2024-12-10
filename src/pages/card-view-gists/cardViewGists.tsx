@@ -113,9 +113,9 @@ const CardViewGists = () => {
   const cardRenderer = (gist: Gist, temp?: boolean) => {
     if (!gist) return null;
     return (
-      <Link to={`/public-gist-view/${gist.id}`}>
+      <Link to={`/public-gist-view/${gist?.id}`}>
         <Card
-          key={gist.id}
+          key={gist?.id}
           className={`${temp ? "w-[100%]" : "w-[385px]"} h-[280px] ${temp ? "" : "max-w-[390px]"} max-h-[290px] rounded-md shadow-md card cursor-pointer`}
         >
           <Box
@@ -133,15 +133,15 @@ const CardViewGists = () => {
                 className="text-[12px] leading-[1.4] overflow-auto w-full max-h-full"
                 style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
               >
-                {gistContents[gist.id]
-                  ? gistContents[gist.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
+                {gistContents[gist?.id]
+                  ? gistContents[gist?.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
                   : "No preview available"}
               </pre>
             )}
           </Box>
           <CardContent className="flex items-start p-4 gap-4  relative">
             <Avatar
-              src={gist.owner.avatar_url}
+              src={gist?.owner?.avatar_url}
               alt="User Photo"
               className="w-12 h-12"
             />
@@ -151,38 +151,38 @@ const CardViewGists = () => {
                 className="!text-[14px] !leading-8 mt-1 truncate w-[80%]"
               >
                 <span className="mt-1 truncate w-[60%]">
-                  {gist.owner.login}
+                  {gist?.owner?.login}
                 </span>
-                {Object.values(gist.files)[0]?.filename && (
+                {Object.values(gist?.files)[0]?.filename && (
                   <>
                     {" / "}
                     <span className="!font-semibold">
-                      {Object.values(gist.files)[0]?.filename}
+                      {Object.values(gist?.files)[0]?.filename}
                     </span>
                   </>
                 )}
               </Typography>
               <Typography variant="body2" className="text-[#7A7A7A]">
-                {formatCreatedAt(gist.created_at)}
+                {formatCreatedAt(gist?.created_at)}
               </Typography>
               <Typography
                 variant="body2"
                 className="text-[#7A7A7A] mt-1 truncate w-[60%]"
               >
-                {gist.description}
+                {gist?.description}
               </Typography>
               <div className="p-3 flex items-center justify-end card-lower-icons">
                 <button
                   onClick={(e) => {
                     if (isLoggedIn) {
-                      handleForkClick(gist.id, user?.token);
+                      handleForkClick(gist?.id, user?.token);
                     } else {
                       handleClick(e);
                     }
                   }}
                   className="p-3 hover:bg-gray-200 rounded-full"
                 >
-                  {loadingStates[gist.id]?.fork ? (
+                  {loadingStates[gist?.id]?.fork ? (
                     <CircularProgress className="!text-[#003B44]" size={20} />
                   ) : (
                     <img
@@ -195,17 +195,17 @@ const CardViewGists = () => {
                 <button
                   onClick={(e) => {
                     if (isLoggedIn) {
-                      handleStarClick(gist.id, user?.token);
+                      handleStarClick(gist?.id, user?.token);
                     } else {
                       handleClick(e);
                     }
                   }}
                   className="p-3 hover:bg-gray-200 rounded-full"
                 >
-                  {loadingStates[gist.id]?.star ? (
+                  {loadingStates[gist?.id]?.star ? (
                     <CircularProgress className="!text-[#003B44]" size={20} />
                   ) : starredGists.some(
-                      (starredGist: Gist) => starredGist.id === gist.id
+                      (starredGist: Gist) => starredGist?.id === gist?.id
                     ) ? (
                     <StarIcon />
                   ) : (
