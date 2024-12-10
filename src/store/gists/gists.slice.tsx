@@ -35,7 +35,6 @@ const gistSlice = createSlice({
     setSearchedGist: (state, action: PayloadAction<Gist | null>) => {
       state.searchedGist = action.payload;
     },
-
     setStarred: (
       state,
       action: PayloadAction<{ gistId: string; isStarred: boolean }>

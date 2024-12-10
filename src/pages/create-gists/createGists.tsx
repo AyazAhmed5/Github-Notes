@@ -4,10 +4,12 @@ import { Box } from "@mui/material";
 import { createGist } from "../../utilities/utils";
 import { toast } from "react-toastify";
 import { RootState } from "../../store/root-reducer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { setTrigger } from "../../store/user/user.slice";
 
 const CreateGists = () => {
+  const dispatch = useDispatch();
   const [description, setDescription] = useState("");
   const { user } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
@@ -62,6 +64,7 @@ const CreateGists = () => {
 
       if (newGist) {
         toast.success("Gist Created Successfully!🚀");
+        dispatch(setTrigger());
         setDescription("");
         setFiles([{ name: "", content: "" }]);
         navigate("/user-profile");

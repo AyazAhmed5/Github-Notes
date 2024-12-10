@@ -97,11 +97,6 @@ const Header = () => {
       dispatch(setSearchQuery(""));
     }
   };
-  // const handleStarredClick = () => {
-  //   setAnchorEl(null);
-
-  //   dispatch(setGists(starredGists));
-  // };
 
   const debouncedSearchQuery = debounce(handleSearchQuery, 500);
 
@@ -224,15 +219,7 @@ const Header = () => {
                 <Link to={"/create-gists"}>
                   <MenuItem onClick={handleClose}>Create gist</MenuItem>
                 </Link>
-                {/* <Link to={"/starredGists"}>
-                  <MenuItem
-                    onClick={() => {
-                      handleStarredClick();
-                    }}
-                  >
-                    Starred gists
-                  </MenuItem>
-                </Link> */}
+
                 <a href={userGithubProfile} target="blank">
                   <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
                 </a>
@@ -274,7 +261,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/*Mobile View */}
       {isOpen && (
         <div className="md:hidden w-full bg-[#003B44] flex  items-center space-y-4 mt-4">
           <div className="relative w-full px-4">

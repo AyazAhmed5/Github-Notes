@@ -34,6 +34,7 @@ const UserProfile = () => {
     githubUserName,
     starredGists,
     userGistsCount,
+    trigger,
   } = useSelector((state: RootState) => state.user);
   const { page } = useSelector((state: RootState) => state.gists);
 
@@ -125,7 +126,7 @@ const UserProfile = () => {
     };
 
     fetchGists();
-  }, [githubUserName, user.token, page]);
+  }, [githubUserName, user.token, page, trigger]);
 
   const cardRenderer = (gist: Gist) => {
     if (!gist) return null;
@@ -237,19 +238,21 @@ const UserProfile = () => {
             </button>
           </a>
         </Box>
-        <Box className="">
+        <Box>
           <Box className="flex  gap-2 items-center">
             <Typography className="!text-[25px] ">All Gist</Typography>
             <Typography className="bg-green-900 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">
               {userGistsCount}
             </Typography>
           </Box>
-          {gists?.slice(0, 2).map((gist) => cardRenderer(gist))}
+          <Box className="w-[50%] md:w-[600px] lg:w-[700px]">
+            {gists?.slice(0, 2).map((gist) => cardRenderer(gist))}
+          </Box>
         </Box>
       </div>
 
       {/*Table Footer */}
-      <table className="w-[88%] border-collapse rounded-lg">
+      <table className="w-[95%] border-collapse rounded-lg">
         <tfoot>
           <tr>
             <td colSpan={5} className="p-3">
