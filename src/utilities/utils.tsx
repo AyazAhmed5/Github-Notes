@@ -251,9 +251,9 @@ export const getPublicGists = async (
 };
 
 export const fetchGistDetails = async (
-  gistId: string,
+  gistId: string
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  token?: string | null
+  // token?: string | null
 ) => {
   try {
     const response = await fetch(`https://api.github.com/gists/${gistId}`, {

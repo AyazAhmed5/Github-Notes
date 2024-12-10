@@ -54,7 +54,7 @@ const UserProfile = () => {
       setLoading(true);
       const contents: { [key: string]: string } = {};
       for (const gist of gists) {
-        const content = await fetchGistDetails(gist.id, user.token);
+        const content = await fetchGistDetails(gist.id);
         contents[gist.id] = content;
       }
       setGistContents(contents);
