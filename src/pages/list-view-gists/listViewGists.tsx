@@ -158,6 +158,7 @@ const ListViewGists = () => {
             open={open}
             anchorEl={anchorEl}
             onClose={() => setAnchorEl(null)}
+            onClick={(e) => e.stopPropagation()}
             anchorOrigin={{
               vertical: "bottom",
               horizontal: "left",

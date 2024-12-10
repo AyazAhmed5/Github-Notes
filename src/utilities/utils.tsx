@@ -252,13 +252,14 @@ export const getPublicGists = async (
 
 export const fetchGistDetails = async (
   gistId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   token?: string | null
 ) => {
   try {
     const response = await fetch(`https://api.github.com/gists/${gistId}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`, //Remove This
+        // Authorization: `Bearer ${token}`, //Remove This
         "Content-Type": "application/json",
       },
     });

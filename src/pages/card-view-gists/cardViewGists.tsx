@@ -51,7 +51,7 @@ const CardViewGists = () => {
       dispatch(setLoading(true));
       const contents: { [key: string]: string } = {};
       for (const gist of gists) {
-        const content = await fetchGistDetails(gist.id, user.token);
+        const content = await fetchGistDetails(gist.id);
         contents[gist.id] = content;
       }
       setGistContents(contents);
@@ -64,6 +64,7 @@ const CardViewGists = () => {
   }, [dispatch, gists, user.token]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
@@ -174,6 +175,7 @@ const CardViewGists = () => {
               <div className="p-3 flex items-center justify-end card-lower-icons">
                 <button
                   onClick={(e) => {
+                    e.stopPropagation();
                     if (isLoggedIn) {
                       handleForkClick(gist?.id, user?.token);
                     } else {
@@ -194,6 +196,7 @@ const CardViewGists = () => {
                 </button>
                 <button
                   onClick={(e) => {
+                    e.stopPropagation();
                     if (isLoggedIn) {
                       handleStarClick(gist?.id, user?.token);
                     } else {
@@ -220,6 +223,7 @@ const CardViewGists = () => {
                   open={open}
                   anchorEl={anchorEl}
                   onClose={() => setAnchorEl(null)}
+                  onClick={(e) => e.stopPropagation()}
                   anchorOrigin={{
                     vertical: "bottom",
                     horizontal: "left",

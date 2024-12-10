@@ -26,11 +26,11 @@ const PublicGistView = () => {
 
   useEffect(() => {
     const fetchContents = async () => {
-      if (!paramGistId || !user?.token) return;
+      if (!paramGistId) return;
       setLoading(true);
 
       try {
-        const content = await fetchGistDetails(paramGistId, user.token);
+        const content = await fetchGistDetails(paramGistId);
         setGistContents(content);
 
         const gist = await fetchGistById(paramGistId, user.token);
@@ -44,7 +44,7 @@ const PublicGistView = () => {
       }
     };
 
-    if (paramGistId && user?.token) {
+    if (paramGistId) {
       fetchContents();
     }
   }, [paramGistId, user?.token]);

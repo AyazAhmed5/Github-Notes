@@ -245,7 +245,7 @@ const UserProfile = () => {
               {userGistsCount}
             </Typography>
           </Box>
-          <Box className="w-[50%] md:w-[600px] lg:w-[700px]">
+          <Box className="w-[50%] md:w-[700px] lg:w-[1000px]">
             {gists?.slice(0, 2).map((gist) => cardRenderer(gist))}
           </Box>
         </Box>
