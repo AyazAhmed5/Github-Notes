@@ -66,9 +66,10 @@ export const fetchGistsByUser = async (
   }
 
   try {
-    let url = `https://api.github.com/users/${username}/gists?${new Date().getTime()}`;
+    let url = `https://api.github.com/users/${username}/gists`;
+    url += `?t=${new Date().getTime()}`;
     if (page !== undefined && perPage !== undefined) {
-      url += `?page=${page}&per_page=${perPage}`;
+      url += `&page=${page}&per_page=${perPage}`;
     }
 
     const response = await fetch(url, {

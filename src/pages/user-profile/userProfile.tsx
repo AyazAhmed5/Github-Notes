@@ -115,6 +115,7 @@ const UserProfile = () => {
           2
         );
 
+        console.log("🚀 ~ fetchGists ~ fetchedGists:", fetchedGists);
         if (fetchedGists) {
           setGists(fetchedGists);
         } else {
@@ -170,7 +171,7 @@ const UserProfile = () => {
           <Box>
             <Typography
               variant="subtitle1"
-              className="!text-[14px] !leading-8 mt-1 truncate w-[80%]"
+              className="!text-[14px] !leading-8 mt-1 "
             >
               <span className="mt-1 truncate w-[60%]">{gist.owner.login}</span>
               {Object.values(gist.files)[0]?.filename && (

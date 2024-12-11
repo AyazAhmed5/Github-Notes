@@ -91,7 +91,7 @@ const ListViewGists = () => {
     return (
       <tr
         key={gist?.id}
-        className="border-b hover:bg-gray-50 cursor-pointer border-l border-r"
+        className="border-b hover:bg-gray-50 h-20 cursor-pointer border-l border-r"
         onClick={() => navigate(`/public-gist-view/${gist.id}`)} // Navigate on row click
       >
         <td className="p-3 flex items-center gap-2">
@@ -128,7 +128,10 @@ const ListViewGists = () => {
             className="p-3 hover:bg-gray-200 rounded-full"
           >
             {loadingStates[gist?.id]?.fork ? (
-              <CircularProgress className="!text-[#003B44]" size={20} />
+              <CircularProgress
+                className="!text-[#003B44] fork-star-icon"
+                size={20}
+              />
             ) : (
               <img src={ForkIcon} className="fork-star-icon" alt="fork-icon" />
             )}
@@ -145,7 +148,10 @@ const ListViewGists = () => {
             className="p-3 hover:bg-gray-200 rounded-full"
           >
             {loadingStates[gist?.id]?.star ? (
-              <CircularProgress className="!text-[#003B44]" size={20} />
+              <CircularProgress
+                className="!text-[#003B44] fork-star-icon"
+                size={20}
+              />
             ) : isStarred ? (
               <StarIcon />
             ) : (
