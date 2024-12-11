@@ -20,10 +20,12 @@ const ListViewGists = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, starredGists } = useSelector((state: RootState) => state.user);
-  const { gists, searchedGist, gistLoading } = useSelector(
+  const { gists, searchedGist, gistLoading, searchQuery } = useSelector(
     (state: RootState) => state.gists
   );
   const isLoggedIn = useSelector(selectIsLoggedIn);
+  const noResultFound =
+    searchedGist === null && searchQuery && !gistLoading ? true : false;
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loadingStates, setLoadingStates] = useState<{
@@ -173,6 +175,15 @@ const ListViewGists = () => {
     );
   };
 
+  const renderSingleRow = () => {
+    return (
+      <tr className="border-b border-l border-r">
+        <td className="p-3 text-center" colSpan={100}>
+          No Result found
+        </td>
+      </tr>
+    );
+  };
   return (
     <div>
       <table className="w-full border-collapse text-left">
@@ -194,6 +205,8 @@ const ListViewGists = () => {
             </tr>
           ) : searchedGist ? (
             renderGistRow(searchedGist)
+          ) : noResultFound ? (
+            renderSingleRow()
           ) : (
             gists?.map(renderGistRow)
           )}

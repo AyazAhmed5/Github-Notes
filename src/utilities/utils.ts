@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
-import { Gist, publicGistInterface } from "./types";
+import { Gist, GistFile, publicGistInterface } from "./types";
 
 export const LoginWithGithub = async () => {
   const provider = new GithubAuthProvider();
@@ -66,7 +66,7 @@ export const fetchGistsByUser = async (
   }
 
   try {
-    let url = `https://api.github.com/users/${username}/gists`;
+    let url = `https://api.github.com/users/${username}/gists?${new Date().getTime()}`;
     if (page !== undefined && perPage !== undefined) {
       url += `?page=${page}&per_page=${perPage}`;
     }
@@ -250,24 +250,27 @@ export const getPublicGists = async (
   }
 };
 
-export const fetchGistDetails = async (
-  gistId: string
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // token?: string | null
-) => {
+export const fetchGistDetails = async (gistId: string, token: string) => {
   try {
     const response = await fetch(`https://api.github.com/gists/${gistId}`, {
       method: "GET",
       headers: {
-        // Authorization: `Bearer ${token}`, //Remove This
+        Authorization: token ? `token ${token}` : "",
         "Content-Type": "application/json",
       },
     });
+
     const data = await response.json();
-    const file = data.files[Object.keys(data.files)[0]];
-    return file?.content;
+
+    const files = Object.entries(data.files).map(([filename, file]) => ({
+      filename,
+      content: (file as GistFile).content || "No Content Available",
+    }));
+
+    return files;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return [];
   }
 };
 

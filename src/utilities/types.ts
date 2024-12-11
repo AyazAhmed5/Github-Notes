@@ -59,3 +59,7 @@ export interface UserState {
   userGistsCount: number;
   trigger: boolean;
 }
+
+export interface GistFile {
+  content: string;
+}

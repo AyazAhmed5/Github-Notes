@@ -37,6 +37,7 @@ import {
   setSearchedGist,
   setSearchQuery,
 } from "../../store/gists/gists.slice";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -66,7 +67,7 @@ const Header = () => {
 
   const handleLogin = async () => {
     const { user, token } = await LoginWithGithub();
-
+    toast.success(`${user.displayName || "User"} logged in successfully!`);
     dispatch(
       setUser({
         uid: user.uid,
@@ -84,7 +85,7 @@ const Header = () => {
 
       dispatch(clearUser());
       setAnchorEl(null);
-      console.log("User logged out successfully");
+      toast.success("User logged out successfully!");
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -114,7 +115,7 @@ const Header = () => {
     };
 
     fetchGists();
-  }, [dispatch, githubUserName, user]);
+  }, [dispatch, githubUserName, user, trigger]);
 
   useEffect(() => {
     const fetchGist = async () => {
@@ -124,7 +125,7 @@ const Header = () => {
         dispatch(setGistLoading(false));
       } else {
         dispatch(setSearchedGist(null));
-        dispatch(setGistLoading(true));
+        dispatch(setGistLoading(false));
       }
     };
     if (searchQuery) {
