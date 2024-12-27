@@ -7,22 +7,33 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   fetchGistById,
   fetchGistDetails,
+  forkGist,
   formatCreatedAt,
+  starGist,
 } from "../../utilities/utils";
 import { Avatar, Box, Skeleton, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { Gist } from "../../utilities/types";
 import ForkIcon from "../../assets/images/fork-icon-white.svg";
 import starIcon from "../../assets/images/star-icon-white.svg";
 import React from "react";
+import { toast } from "react-toastify";
+import { setStarred } from "../../store/gists/gists.slice";
+import { setTrigger } from "../../store/user/user.slice";
 
 const PublicGistView = () => {
   const { id: paramGistId } = useParams();
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  const { user, starredGists } = useSelector((state: RootState) => state.user);
 
+  const isStarred = starredGists.some(
+    (starredGist: Gist) => starredGist.id === paramGistId
+  );
   const [gistContents, setGistContents] = useState<any[]>([]);
+  const [starCount, setStarCount] = useState<number>(isStarred ? 1 : 0);
+  const [forkCount, setForkCount] = useState<number>(0);
   const [selectedGist, setSelectedGist] = useState<Gist>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,7 +43,7 @@ const PublicGistView = () => {
       setLoading(true);
 
       try {
-        const content = await await fetchGistDetails(
+        const content = await fetchGistDetails(
           paramGistId,
           user?.token ? user?.token : ""
         );
@@ -51,6 +62,37 @@ const PublicGistView = () => {
 
     fetchContents();
   }, [paramGistId, user?.token]);
+
+  const handleForkClick = async (gistId: string, token: string | null) => {
+    if (!token) return;
+
+    try {
+      const forkedGist = await forkGist(gistId, token);
+
+      if (forkedGist) {
+        toast.success("Gist forked successfully! 🚀");
+        setForkCount(1);
+      }
+    } catch (error) {
+      if (error) toast.error("Something Went Wrong ");
+    }
+  };
+
+  const handleStarClick = async (gistId: string, token: string | null) => {
+    if (!token) return;
+
+    try {
+      const response = await starGist(gistId, token);
+      if (response) {
+        toast.success("Gist Starred successfully! 🚀");
+        setStarCount(1);
+        dispatch(setStarred({ gistId, isStarred: true }));
+        dispatch(setTrigger());
+      }
+    } catch (error) {
+      if (error) toast.error("Something Went Wrong ");
+    }
+  };
 
   if (!selectedGist || !gistContents) return null;
   return (
@@ -94,7 +136,12 @@ const PublicGistView = () => {
           </Box>
           <div className="flex gap-2">
             <div className="fork-star-container">
-              <Box className={`fork-star-icon-box`}>
+              <Box
+                onClick={() => {
+                  handleForkClick(selectedGist.id, user.token);
+                }}
+                className={`fork-star-icon-box cursor-pointer`}
+              >
                 <img
                   src={ForkIcon}
                   className="fork-star-icon"
@@ -105,11 +152,16 @@ const PublicGistView = () => {
                 </Typography>
               </Box>
               <Box className={`icon-box`}>
-                {selectedGist?.forks?.length || 0}
+                {selectedGist?.forks?.length || forkCount}
               </Box>
             </div>
             <div className="fork-star-container">
-              <Box className={`fork-star-icon-box`}>
+              <Box
+                className={`fork-star-icon-box cursor-pointer`}
+                onClick={() => {
+                  handleStarClick(selectedGist.id, user.token);
+                }}
+              >
                 <img
                   src={starIcon}
                   className="fork-star-icon"
@@ -119,7 +171,7 @@ const PublicGistView = () => {
                   Star
                 </Typography>
               </Box>
-              <Box className={`icon-box`}>0</Box>
+              <Box className={`icon-box`}>{starCount}</Box>
             </div>
           </div>
         </div>

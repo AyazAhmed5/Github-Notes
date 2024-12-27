@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { CircularProgress, Popover, Skeleton, Typography } from "@mui/material";
+import { CircularProgress, Popover, Typography } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 
 import { toast } from "react-toastify";
@@ -152,7 +152,7 @@ const ListViewGists = () => {
                 className="!text-[#003B44] fork-star-icon"
                 size={20}
               />
-            ) : isStarred ? (
+            ) : isStarred && isLoggedIn ? (
               <StarIcon />
             ) : (
               <img
@@ -192,32 +192,34 @@ const ListViewGists = () => {
   };
   return (
     <div>
-      <table className="w-full border-collapse text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-3 table-headings">Name</th>
-            <th className="p-3 table-headings">Notebook Name</th>
-            <th className="p-3 table-headings">Keyword</th>
-            <th className="p-3 table-headings">Updated</th>
-            <th className="p-3 table-headings"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {gistLoading ? (
-            <tr className="border-b hover:bg-gray-50 cursor-pointer border-l border-r">
-              <Skeleton variant="text" width="400%" height="30%" />
-              <Skeleton variant="text" width="500%" height="30%" />
-              <Skeleton variant="text" width="600%" height="30%" />
+      {gistLoading ? (
+        <>
+          <div className="loading-skeleton-list" />
+          <div className="loading-skeleton-list" />
+          <div className="loading-skeleton-list" />
+          <div className="loading-skeleton-list" />
+          <div className="loading-skeleton-list" />
+        </>
+      ) : (
+        <table className="w-full border-collapse text-left">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 table-headings">Name</th>
+              <th className="p-3 table-headings">Notebook Name</th>
+              <th className="p-3 table-headings">Keyword</th>
+              <th className="p-3 table-headings">Updated</th>
+              <th className="p-3 table-headings"></th>
             </tr>
-          ) : searchedGist ? (
-            renderGistRow(searchedGist)
-          ) : noResultFound ? (
-            renderSingleRow()
-          ) : (
-            gists?.map(renderGistRow)
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {searchedGist
+              ? renderGistRow(searchedGist)
+              : noResultFound
+                ? renderSingleRow()
+                : gists?.map(renderGistRow)}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

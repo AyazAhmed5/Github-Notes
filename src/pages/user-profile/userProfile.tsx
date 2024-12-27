@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 import starIcon from "../../assets/images/star-icon.svg";
 import StarIcon from "@mui/icons-material/Star";
 import { setPage, setStarred } from "../../store/gists/gists.slice";
-import { setTrigger } from "../../store/user/user.slice";
+import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 import { Link } from "react-router";
 import rightIcon from "../../assets/images/righIcon.svg";
 import leftIcon from "../../assets/images/leftIcon.svg";
@@ -37,6 +37,7 @@ const UserProfile = () => {
     trigger,
   } = useSelector((state: RootState) => state.user);
   const { page } = useSelector((state: RootState) => state.gists);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
 
   const [gists, setGists] = useState<Gist[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -115,7 +116,6 @@ const UserProfile = () => {
           2
         );
 
-        console.log("🚀 ~ fetchGists ~ fetchedGists:", fetchedGists);
         if (fetchedGists) {
           setGists(fetchedGists);
         } else {
@@ -204,7 +204,7 @@ const UserProfile = () => {
                   <CircularProgress className="!text-[#003B44]" size={20} />
                 ) : starredGists.some(
                     (starredGist: Gist) => starredGist.id === gist.id
-                  ) ? (
+                  ) && isLoggedIn ? (
                   <StarIcon />
                 ) : (
                   <img

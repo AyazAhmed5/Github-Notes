@@ -17,7 +17,9 @@ import { useLocation } from "react-router";
 const LandingPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { page, searchedGist } = useSelector((state: RootState) => state.gists);
+  const { page, searchedGist, searchQuery } = useSelector(
+    (state: RootState) => state.gists
+  );
   const { user, trigger } = useSelector((state: RootState) => state.user);
 
   const [showGridView, setShowGridView] = useState<boolean>(false);
@@ -79,35 +81,37 @@ const LandingPage = () => {
       {showGridView ? <CardViewGists /> : <ListViewGists />}
 
       {/*Table Footer */}
-      <table className="w-full border-collapse rounded-lg">
-        <tfoot className="bg-gray-100 w-[98%]">
-          <tr>
-            <td colSpan={5} className="p-3">
-              <Box className="flex justify-end items-center gap-10 ">
-                <img
-                  onClick={handlePreviousPage}
-                  src={leftIcon}
-                  alt="Previous Page"
-                  className={`${page === 1 ? "" : "cursor-pointer"}`}
-                />
-                <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
-                  Page
-                  <span className="border px-2 py-1 rounded-md">
-                    {searchedGist ? "1" : page}
-                  </span>
-                  of {searchedGist ? "1" : "500"}
-                </div>
-                <img
-                  onClick={handleNextPage}
-                  src={rightIcon}
-                  alt="Next Page"
-                  className="cursor-pointer"
-                />
-              </Box>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+      {!searchQuery && (
+        <table className="w-full border-collapse rounded-lg">
+          <tfoot className={`${!showGridView ? "bg-gray-100" : ""} w-[98%]`}>
+            <tr>
+              <td colSpan={5} className="p-3">
+                <Box className="flex justify-end items-center gap-10 ">
+                  <img
+                    onClick={handlePreviousPage}
+                    src={leftIcon}
+                    alt="Previous Page"
+                    className={`${page === 1 ? "" : "cursor-pointer"}`}
+                  />
+                  <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
+                    Page
+                    <span className="border px-2 py-1 rounded-md">
+                      {searchedGist ? "1" : page}
+                    </span>
+                    of {searchedGist ? "1" : "500"}
+                  </div>
+                  <img
+                    onClick={handleNextPage}
+                    src={rightIcon}
+                    alt="Next Page"
+                    className="cursor-pointer"
+                  />
+                </Box>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      )}
     </div>
   );
 };

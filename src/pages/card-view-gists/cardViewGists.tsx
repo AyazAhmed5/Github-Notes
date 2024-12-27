@@ -129,11 +129,11 @@ const CardViewGists = () => {
     return (
       <Card
         key={gist?.id}
-        className={`${temp ? "w-[100%]" : "w-[385px]"} h-[235px] ${temp ? "" : "max-w-[390px]"} max-h-[290px] rounded-md shadow-md card `}
+        className={`${temp ? "w-[100%]" : "w-[385px]"} h-[228px] ${temp ? "" : "max-w-[390px]"} max-h-[290px] rounded-md shadow-md card `}
       >
         <Link to={`/public-gist-view/${gist?.id}`}>
           <Box
-            className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center  flex-col cursor-pointer"
+            className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center flex-col cursor-pointer"
             style={{ height: "140px" }}
           >
             {loading ? (
@@ -163,26 +163,28 @@ const CardViewGists = () => {
           <Box>
             <Typography
               variant="subtitle1"
-              className="!text-[14px] !leading-8 mt-1 truncate w-[80%]"
+              className="!text-[14px] !leading-8 mt-1 truncate w-[70%]"
             >
-              <span className="mt-1 truncate w-[60%]">
+              <span className="mt-1 !truncate !w-[60%]">
                 {gist?.owner?.login}
               </span>
-              {Object.values(gist?.files)[0]?.filename && (
-                <>
-                  {" / "}
-                  <span className="!font-semibold">
-                    {Object.values(gist?.files)[0]?.filename}
-                  </span>
-                </>
-              )}
+              <span className="mt-1 !truncate !w-[40%]">
+                {Object.values(gist?.files)[0]?.filename && (
+                  <>
+                    {" / "}
+                    <span className="!font-semibold truncate w-[40%]">
+                      {Object.values(gist?.files)[0]?.filename}
+                    </span>
+                  </>
+                )}
+              </span>
             </Typography>
-            <Typography variant="body2" className="text-[#7A7A7A]">
+            <Typography variant="body2" className="text-[#7A7A7A] !text-[11px]">
               {formatCreatedAt(gist?.created_at)}
             </Typography>
             <Typography
               variant="body2"
-              className="text-[#7A7A7A] mt-1 truncate w-[60%]"
+              className="text-[#7A7A7A] mt-1 truncate w-[40%]  !text-[11px]"
             >
               {gist?.description}
             </Typography>
@@ -223,7 +225,7 @@ const CardViewGists = () => {
                   <CircularProgress className="!text-[#003B44]" size={20} />
                 ) : starredGists.some(
                     (starredGist: Gist) => starredGist?.id === gist?.id
-                  ) ? (
+                  ) && isLoggedIn ? (
                   <StarIcon />
                 ) : (
                   <img
@@ -258,9 +260,11 @@ const CardViewGists = () => {
     <div className="flex justify-center items-center flex-wrap gap-4 mb-3">
       {gistLoading ? (
         <>
-          <Skeleton variant="text" width="400%" height="100%" />
-          <Skeleton variant="text" width="500%" height="100%" />
-          <Skeleton variant="text" width="600%" height="100%" />
+          <div className="loading-skeleton" />
+          <div className="loading-skeleton" />
+          <div className="loading-skeleton" />
+          <div className="loading-skeleton" />
+          <div className="loading-skeleton" />
         </>
       ) : searchedGist ? (
         cardRenderer(searchedGist, true)

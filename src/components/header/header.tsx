@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -42,6 +42,7 @@ import { toast } from "react-toastify";
 const Header = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, userGithubProfile, trigger, githubUserName } = useSelector(
     (state: RootState) => state.user
   );
@@ -63,6 +64,7 @@ const Header = () => {
   const handleLogoClick = () => {
     dispatch(setPage(1));
     dispatch(setTrigger());
+    dispatch(setSearchQuery(""));
   };
 
   const handleLogin = async () => {
@@ -85,6 +87,7 @@ const Header = () => {
 
       dispatch(clearUser());
       setAnchorEl(null);
+      navigate("/");
       toast.success("User logged out successfully!");
     } catch (error) {
       console.error("Error during logout:", error);
@@ -99,7 +102,26 @@ const Header = () => {
     }
   };
 
-  const debouncedSearchQuery = debounce(handleSearchQuery, 500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchGistByID = useCallback(
+    debounce(async (query) => {
+      try {
+        dispatch(setGistLoading(true)); // Start loading
+        const gist = await fetchGistById(query, user?.token);
+        if (gist) {
+          dispatch(setSearchedGist(gist));
+        } else {
+          dispatch(setSearchedGist(null));
+        }
+      } catch (error) {
+        console.error("Error fetching gist:", error);
+        dispatch(setSearchedGist(null));
+      } finally {
+        dispatch(setGistLoading(false));
+      }
+    }, 500),
+    [dispatch, user?.token]
+  );
 
   useEffect(() => {
     const fetchGists = async () => {
@@ -118,24 +140,13 @@ const Header = () => {
   }, [dispatch, githubUserName, user, trigger]);
 
   useEffect(() => {
-    const fetchGist = async () => {
-      const gist = await fetchGistById(searchQuery, user?.token); // Make sure to pass the token if needed
-      if (gist) {
-        dispatch(setSearchedGist(gist));
-        dispatch(setGistLoading(false));
-      } else {
-        dispatch(setSearchedGist(null));
-        dispatch(setGistLoading(false));
-      }
-    };
     if (searchQuery) {
-      dispatch(setGistLoading(true));
-      fetchGist();
+      fetchGistByID(searchQuery);
     } else {
       dispatch(setGistLoading(false));
       dispatch(setSearchedGist(null));
     }
-  }, [dispatch, searchQuery, user?.token]);
+  }, [dispatch, fetchGistByID, searchQuery]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -165,10 +176,11 @@ const Header = () => {
             <input
               type="text"
               placeholder="Search gists..."
+              value={searchQuery}
               onChange={(e) => {
                 e.stopPropagation();
                 if (location.pathname === "/") {
-                  debouncedSearchQuery(e);
+                  handleSearchQuery(e);
                 }
               }}
               className="w-64 pl-10 pr-4 py-2 border border-[#FFFFFF80] text-white bg-[#003b44] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#005f67]"
