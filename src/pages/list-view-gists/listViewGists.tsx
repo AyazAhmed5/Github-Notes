@@ -51,9 +51,21 @@ const ListViewGists = () => {
           ...prev,
           [gistId]: { ...prev[gistId], fork: false },
         }));
+      } else {
+        toast.error("Something Went Wrong ");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], fork: false },
+        }));
       }
     } catch (error) {
-      if (error) toast.error("Something Went Wrong ");
+      if (error) {
+        toast.error("Something Went Wrong ");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], fork: false },
+        }));
+      }
     }
   };
 
@@ -74,7 +86,13 @@ const ListViewGists = () => {
         }));
       }
     } catch (error) {
-      if (error) toast.error("Something Went Wrong ");
+      if (error) {
+        toast.error("Something Went Wrong ");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], star: false },
+        }));
+      }
     }
   };
 

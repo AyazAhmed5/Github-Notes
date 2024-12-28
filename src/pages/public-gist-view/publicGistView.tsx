@@ -80,6 +80,7 @@ const PublicGistView = () => {
     }));
     try {
       const forkedGist = await forkGist(gistId);
+      console.log("🚀 ~ handleForkClick ~ forkedGist:", forkedGist);
 
       if (forkedGist) {
         toast.success("Gist forked successfully! 🚀");
@@ -88,9 +89,21 @@ const PublicGistView = () => {
           [gistId]: { ...prev[gistId], fork: false },
         }));
         setForkCount(1);
+      } else {
+        toast.error("Something Went Wrong ");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], fork: false },
+        }));
       }
     } catch (error) {
-      if (error) toast.error("Something Went Wrong ");
+      if (error) {
+        toast.error("Something Went Wrong ");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], fork: false },
+        }));
+      }
     }
   };
 
@@ -117,7 +130,13 @@ const PublicGistView = () => {
         dispatch(setTrigger());
       }
     } catch (error) {
-      if (error) toast.error("Something Went Wrong ");
+      if (error) {
+        toast.error("Something Went Wrong ");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], star: false },
+        }));
+      }
     }
   };
 
