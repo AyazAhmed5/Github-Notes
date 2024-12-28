@@ -11,7 +11,15 @@ import {
   formatCreatedAt,
   starGist,
 } from "../../utilities/utils";
-import { Avatar, Box, Skeleton, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  Popover,
+  Skeleton,
+  Typography,
+} from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { Gist } from "../../utilities/types";
@@ -20,13 +28,19 @@ import starIcon from "../../assets/images/star-icon-white.svg";
 import React from "react";
 import { toast } from "react-toastify";
 import { setStarred } from "../../store/gists/gists.slice";
-import { setTrigger } from "../../store/user/user.slice";
+import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 
 const PublicGistView = () => {
   const { id: paramGistId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, starredGists } = useSelector((state: RootState) => state.user);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [loadingStates, setLoadingStates] = useState<{
+    [key: string]: { fork: boolean; star: boolean };
+  }>({});
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const open = Boolean(anchorEl);
 
   const isStarred = starredGists.some(
     (starredGist: Gist) => starredGist.id === paramGistId
@@ -65,12 +79,19 @@ const PublicGistView = () => {
 
   const handleForkClick = async (gistId: string, token: string | null) => {
     if (!token) return;
-
+    setLoadingStates((prev) => ({
+      ...prev,
+      [gistId]: { ...prev[gistId], fork: true },
+    }));
     try {
       const forkedGist = await forkGist(gistId, token);
 
       if (forkedGist) {
         toast.success("Gist forked successfully! 🚀");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], fork: false },
+        }));
         setForkCount(1);
       }
     } catch (error) {
@@ -78,13 +99,25 @@ const PublicGistView = () => {
     }
   };
 
+  const handleClick = (event: any) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+
   const handleStarClick = async (gistId: string, token: string | null) => {
     if (!token) return;
-
+    setLoadingStates((prev) => ({
+      ...prev,
+      [gistId]: { ...prev[gistId], star: true },
+    }));
     try {
       const response = await starGist(gistId, token);
       if (response) {
         toast.success("Gist Starred successfully! 🚀");
+        setLoadingStates((prev) => ({
+          ...prev,
+          [gistId]: { ...prev[gistId], star: false },
+        }));
         setStarCount(1);
         dispatch(setStarred({ gistId, isStarred: true }));
         dispatch(setTrigger());
@@ -137,16 +170,25 @@ const PublicGistView = () => {
           <div className="flex gap-2">
             <div className="fork-star-container">
               <Box
-                onClick={() => {
-                  handleForkClick(selectedGist.id, user.token);
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isLoggedIn) {
+                    handleForkClick(selectedGist.id, user.token);
+                  } else {
+                    handleClick(e);
+                  }
                 }}
                 className={`fork-star-icon-box cursor-pointer`}
               >
-                <img
-                  src={ForkIcon}
-                  className="fork-star-icon"
-                  alt="fork-icon"
-                />
+                {loadingStates[selectedGist?.id]?.fork ? (
+                  <CircularProgress className="!text-white" size={20} />
+                ) : (
+                  <img
+                    src={ForkIcon}
+                    className="fork-star-icon"
+                    alt="fork-icon"
+                  />
+                )}
                 <Typography className="text-[white] !font-semibold !text-[14px]">
                   Fork
                 </Typography>
@@ -158,21 +200,48 @@ const PublicGistView = () => {
             <div className="fork-star-container">
               <Box
                 className={`fork-star-icon-box cursor-pointer`}
-                onClick={() => {
-                  handleStarClick(selectedGist.id, user.token);
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isLoggedIn) {
+                    handleStarClick(selectedGist.id, user.token);
+                  } else {
+                    handleClick(e);
+                  }
                 }}
               >
-                <img
-                  src={starIcon}
-                  className="fork-star-icon"
-                  alt="filled-star"
-                />
+                {loadingStates[selectedGist?.id]?.star ? (
+                  <CircularProgress className="!text-white" size={20} />
+                ) : starredGists.some(
+                    (starredGist: Gist) => starredGist?.id === selectedGist?.id
+                  ) && isLoggedIn ? (
+                  <StarIcon />
+                ) : (
+                  <img
+                    src={starIcon}
+                    className="fork-star-icon"
+                    alt="filled-star"
+                  />
+                )}
                 <Typography className="text-[white] !font-semibold !text-[14px]">
                   Star
                 </Typography>
               </Box>
               <Box className={`icon-box`}>{starCount}</Box>
             </div>
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={() => setAnchorEl(null)}
+              onClick={(e) => e.stopPropagation()}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <Typography sx={{ p: 2 }}>
+                Please login first in order to perform this action!!
+              </Typography>
+            </Popover>
           </div>
         </div>
         {gistContents.map((gist, index) => (

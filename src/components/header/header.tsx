@@ -95,24 +95,17 @@ const Header = () => {
   };
 
   const handleSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value !== "") {
-      dispatch(setSearchQuery(e.target.value));
-    } else {
-      dispatch(setSearchQuery(""));
-    }
+    dispatch(setSearchQuery(e.target.value.trim()));
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchGistByID = useCallback(
     debounce(async (query) => {
+      if (!query) return;
       try {
-        dispatch(setGistLoading(true)); // Start loading
+        dispatch(setGistLoading(true));
         const gist = await fetchGistById(query, user?.token);
-        if (gist) {
-          dispatch(setSearchedGist(gist));
-        } else {
-          dispatch(setSearchedGist(null));
-        }
+        dispatch(setSearchedGist(gist || null));
       } catch (error) {
         console.error("Error fetching gist:", error);
         dispatch(setSearchedGist(null));
@@ -122,7 +115,6 @@ const Header = () => {
     }, 500),
     [dispatch, user?.token]
   );
-
   useEffect(() => {
     const fetchGists = async () => {
       if (!user.token) return;
@@ -143,6 +135,7 @@ const Header = () => {
     if (searchQuery) {
       fetchGistByID(searchQuery);
     } else {
+      fetchGistByID.cancel();
       dispatch(setGistLoading(false));
       dispatch(setSearchedGist(null));
     }
@@ -157,6 +150,67 @@ const Header = () => {
     };
     fetchData();
   }, [dispatch, user.token, trigger]);
+
+  const menuOptions = () => {
+    return (
+      <>
+        <Button
+          id="basic-button"
+          aria-controls={open ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleClick}
+        >
+          <img
+            src={user.photoUrl ?? ""}
+            alt="John Doe"
+            className="w-10 h-10 rounded-full"
+          />
+        </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+        >
+          <MenuItem>
+            <Typography variant="subtitle2">Signed in as</Typography>
+          </MenuItem>
+          <MenuItem>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: "bold",
+                paddingBottom: 0,
+                color: "#003B44",
+              }}
+            >
+              {user.name}
+            </Typography>
+          </MenuItem>
+          <Divider />
+          <Link to={"/user-profile"}>
+            <MenuItem onClick={handleClose}>Your gists</MenuItem>
+          </Link>
+          <Link to={"/create-gists"}>
+            <MenuItem onClick={handleClose}>Create gist</MenuItem>
+          </Link>
+
+          <a href={userGithubProfile} target="blank">
+            <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
+          </a>
+          <Divider />
+          <a href="https://docs.github.com/en" target="blank">
+            <MenuItem onClick={handleClose}>Help</MenuItem>
+          </a>
+          <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+        </Menu>
+      </>
+    );
+  };
 
   return (
     <nav className="navbar text-white">
@@ -187,62 +241,7 @@ const Header = () => {
             />
           </div>
           {isLoggedIn ? (
-            <div>
-              <Button
-                id="basic-button"
-                aria-controls={open ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-                onClick={handleClick}
-              >
-                <img
-                  src={user.photoUrl ?? ""}
-                  alt="John Doe"
-                  className="w-10 h-10 rounded-full"
-                />
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-              >
-                <MenuItem>
-                  <Typography variant="subtitle2">Signed in as</Typography>
-                </MenuItem>
-                <MenuItem>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: "bold",
-                      paddingBottom: 0,
-                      color: "#003B44",
-                    }}
-                  >
-                    {user.name}
-                  </Typography>
-                </MenuItem>
-                <Divider />
-                <Link to={"/user-profile"}>
-                  <MenuItem onClick={handleClose}>Your gists</MenuItem>
-                </Link>
-                <Link to={"/create-gists"}>
-                  <MenuItem onClick={handleClose}>Create gist</MenuItem>
-                </Link>
-
-                <a href={userGithubProfile} target="blank">
-                  <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
-                </a>
-                <Divider />
-                <a href="https://docs.github.com/en" target="blank">
-                  <MenuItem onClick={handleClose}>Help</MenuItem>
-                </a>
-                <MenuItem onClick={handleLogout}>Sign out</MenuItem>
-              </Menu>
-            </div>
+            <div>{menuOptions()}</div>
           ) : (
             <Button
               onClick={handleLogin}
@@ -286,61 +285,7 @@ const Header = () => {
           </div>
 
           {isLoggedIn ? (
-            <div className="!mt-0">
-              <Button
-                id="basic-button"
-                aria-controls={open ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-                onClick={handleClick}
-              >
-                <img
-                  src={user.photoUrl ?? ""}
-                  alt="John Doe"
-                  className="w-10 h-10 rounded-full"
-                />
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-              >
-                <MenuItem disabled>
-                  <Typography variant="subtitle2">Signed in as</Typography>
-                </MenuItem>
-                <MenuItem>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: "bold",
-                      paddingBottom: 0,
-                      color: "#003B44",
-                      cursor: "default",
-                    }}
-                  >
-                    {user.name}
-                  </Typography>
-                </MenuItem>
-                <Divider />
-
-                <MenuItem onClick={handleClose}>Your gists</MenuItem>
-                <Link to={"/create-gists"}>
-                  <MenuItem>Create gist</MenuItem>
-                </Link>
-                <a href={userGithubProfile} target="blank">
-                  <MenuItem onClick={handleClose}>Your GitHub profile</MenuItem>
-                </a>
-                <Divider />
-                <a href="https://docs.github.com/en" target="blank">
-                  <MenuItem onClick={handleClose}>Help</MenuItem>
-                </a>
-                <MenuItem onClick={handleLogout}>Sign out</MenuItem>
-              </Menu>
-            </div>
+            <div className="!mt-0">{menuOptions()}</div>
           ) : (
             <Button
               onClick={handleLogin}

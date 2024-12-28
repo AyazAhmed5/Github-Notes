@@ -163,16 +163,16 @@ const CardViewGists = () => {
           <Box>
             <Typography
               variant="subtitle1"
-              className="!text-[14px] !leading-8 mt-1 truncate w-[70%]"
+              className="!text-[14px] !leading-8 mt-1 truncate !w-[70%]"
             >
               <span className="mt-1 !truncate !w-[60%]">
                 {gist?.owner?.login}
               </span>
-              <span className="mt-1 !truncate !w-[40%]">
+              <span className="mt-1 !truncate !w-[40%] ">
                 {Object.values(gist?.files)[0]?.filename && (
                   <>
                     {" / "}
-                    <span className="!font-semibold truncate w-[40%]">
+                    <span className="truncate !w-[40%] !font-semibold">
                       {Object.values(gist?.files)[0]?.filename}
                     </span>
                   </>
