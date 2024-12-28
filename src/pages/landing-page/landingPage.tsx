@@ -20,18 +20,18 @@ const LandingPage = () => {
   const { page, searchedGist, searchQuery } = useSelector(
     (state: RootState) => state.gists
   );
-  const { user, trigger } = useSelector((state: RootState) => state.user);
+  const { trigger } = useSelector((state: RootState) => state.user);
 
   const [showGridView, setShowGridView] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGists = async () => {
-      const data = await getPublicGists(page, 6, user.token);
+      const data = await getPublicGists(page, 6);
       if (data) dispatch(setGists(data));
     };
 
     fetchGists();
-  }, [dispatch, page, user.token, trigger]);
+  }, [dispatch, page, trigger]);
 
   const handlePreviousPage = () => {
     if (page > 1) {

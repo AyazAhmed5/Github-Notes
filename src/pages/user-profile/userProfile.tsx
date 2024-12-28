@@ -65,7 +65,7 @@ const UserProfile = () => {
     if (gists && gists.length > 0) {
       fetchContents();
     }
-  }, [dispatch, gists, user.token]);
+  }, [dispatch, gists]);
 
   const handleStarClick = async (gistId: string, token: string | null) => {
     if (!token) return;
