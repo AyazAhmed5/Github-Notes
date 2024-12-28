@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -57,13 +56,10 @@ const PublicGistView = () => {
       setLoading(true);
 
       try {
-        const content = await fetchGistDetails(
-          paramGistId,
-          user?.token ? user?.token : ""
-        );
+        const content = await fetchGistDetails(paramGistId);
         setGistContents(content);
 
-        const gist = await fetchGistById(paramGistId, user.token);
+        const gist = await fetchGistById(paramGistId);
         if (gist) {
           setSelectedGist(gist);
         }
@@ -77,14 +73,13 @@ const PublicGistView = () => {
     fetchContents();
   }, [paramGistId, user?.token]);
 
-  const handleForkClick = async (gistId: string, token: string | null) => {
-    if (!token) return;
+  const handleForkClick = async (gistId: string) => {
     setLoadingStates((prev) => ({
       ...prev,
       [gistId]: { ...prev[gistId], fork: true },
     }));
     try {
-      const forkedGist = await forkGist(gistId, token);
+      const forkedGist = await forkGist(gistId);
 
       if (forkedGist) {
         toast.success("Gist forked successfully! 🚀");
@@ -104,14 +99,13 @@ const PublicGistView = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleStarClick = async (gistId: string, token: string | null) => {
-    if (!token) return;
+  const handleStarClick = async (gistId: string) => {
     setLoadingStates((prev) => ({
       ...prev,
       [gistId]: { ...prev[gistId], star: true },
     }));
     try {
-      const response = await starGist(gistId, token);
+      const response = await starGist(gistId);
       if (response) {
         toast.success("Gist Starred successfully! 🚀");
         setLoadingStates((prev) => ({
@@ -173,7 +167,7 @@ const PublicGistView = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isLoggedIn) {
-                    handleForkClick(selectedGist.id, user.token);
+                    handleForkClick(selectedGist.id);
                   } else {
                     handleClick(e);
                   }
@@ -203,7 +197,7 @@ const PublicGistView = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isLoggedIn) {
-                    handleStarClick(selectedGist.id, user.token);
+                    handleStarClick(selectedGist.id);
                   } else {
                     handleClick(e);
                   }

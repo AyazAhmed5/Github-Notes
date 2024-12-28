@@ -52,10 +52,7 @@ const CardViewGists = () => {
       dispatch(setLoading(true));
       const contents: { [key: string]: string } = {};
       for (const gist of gists) {
-        const gistDetail = await fetchGistDetails(
-          gist.id,
-          user?.token ? user?.token : ""
-        );
+        const gistDetail = await fetchGistDetails(gist.id);
         contents[gist.id] = gistDetail[0].content;
       }
       setGistContents(contents);
@@ -72,14 +69,13 @@ const CardViewGists = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleForkClick = async (gistId: string, token: string | null) => {
-    if (!token) return;
+  const handleForkClick = async (gistId: string) => {
     setLoadingStates((prev) => ({
       ...prev,
       [gistId]: { ...prev[gistId], fork: true },
     }));
     try {
-      const forkedGist = await forkGist(gistId, token);
+      const forkedGist = await forkGist(gistId);
 
       if (forkedGist) {
         toast.success("Gist forked successfully! 🚀");
@@ -93,14 +89,13 @@ const CardViewGists = () => {
     }
   };
 
-  const handleStarClick = async (gistId: string, token: string | null) => {
-    if (!token) return;
+  const handleStarClick = async (gistId: string) => {
     setLoadingStates((prev) => ({
       ...prev,
       [gistId]: { ...prev[gistId], star: true },
     }));
     try {
-      const response = await starGist(gistId, token);
+      const response = await starGist(gistId);
       if (response) {
         toast.success("Gist Starred successfully! 🚀");
         dispatch(setStarred({ gistId, isStarred: true }));
@@ -193,7 +188,7 @@ const CardViewGists = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isLoggedIn) {
-                    handleForkClick(gist?.id, user?.token);
+                    handleForkClick(gist?.id);
                   } else {
                     handleClick(e);
                   }
@@ -214,7 +209,7 @@ const CardViewGists = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isLoggedIn) {
-                    handleStarClick(gist?.id, user?.token);
+                    handleStarClick(gist?.id);
                   } else {
                     handleClick(e);
                   }

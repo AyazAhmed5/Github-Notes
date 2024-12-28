@@ -60,7 +60,7 @@ const CreateGists = () => {
     });
 
     try {
-      const newGist = await createGist(description, filesPayload, user.token);
+      const newGist = await createGist(description, filesPayload);
 
       if (newGist) {
         toast.success("Gist Created Successfully!🚀");

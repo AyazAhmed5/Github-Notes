@@ -104,7 +104,7 @@ const Header = () => {
       if (!query) return;
       try {
         dispatch(setGistLoading(true));
-        const gist = await fetchGistById(query, user?.token);
+        const gist = await fetchGistById(query);
         dispatch(setSearchedGist(gist || null));
       } catch (error) {
         console.error("Error fetching gist:", error);
@@ -118,11 +118,11 @@ const Header = () => {
   useEffect(() => {
     const fetchGists = async () => {
       if (!user.token) return;
-      const data = await fetchUserProfile(user.token);
+      const data = await fetchUserProfile();
       dispatch(setGithubUserName(data.login));
       dispatch(setUserGithubProfile(data.html_url));
 
-      const fetchedGists = await fetchGistsByUser(githubUserName, user.token);
+      const fetchedGists = await fetchGistsByUser(githubUserName);
       if (fetchedGists) {
         dispatch(setUserGistsCount(fetchedGists.length));
       }
@@ -132,7 +132,7 @@ const Header = () => {
   }, [dispatch, githubUserName, user, trigger]);
 
   useEffect(() => {
-    if (searchQuery) {
+    if (searchQuery && location.pathname === "/") {
       fetchGistByID(searchQuery);
     } else {
       fetchGistByID.cancel();
@@ -144,7 +144,7 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (user?.token) {
-        const gists = await fetchStarredGists(user.token);
+        const gists = await fetchStarredGists();
         dispatch(setStarredGist(gists));
       }
     };
@@ -233,7 +233,7 @@ const Header = () => {
               value={searchQuery}
               onChange={(e) => {
                 e.stopPropagation();
-                if (location.pathname === "/") {
+                if (e) {
                   handleSearchQuery(e);
                 }
               }}

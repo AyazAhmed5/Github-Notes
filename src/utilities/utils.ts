@@ -1,8 +1,8 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { signInWithPopup, GithubAuthProvider } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { Gist, GistFile, publicGistInterface } from "./types";
+import apiClient from "./api-client";
 
 export const LoginWithGithub = async () => {
   const provider = new GithubAuthProvider();
@@ -13,6 +13,9 @@ export const LoginWithGithub = async () => {
 
     const credential = GithubAuthProvider.credentialFromResult(result);
     const token = credential!.accessToken;
+    if (token) {
+      localStorage.setItem("GITHUB_TOKEN", token);
+    }
 
     const user = result.user;
     return { user, token };
@@ -22,31 +25,15 @@ export const LoginWithGithub = async () => {
   }
 };
 
-export const fetchGistById = async (
-  gistId: string,
-  token: string | null
-): Promise<Gist | null> => {
+export const fetchGistById = async (gistId: string) => {
   if (!gistId) return null;
 
   try {
-    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
-      method: "GET",
-      headers: {
-        Authorization: token ? `token ${token}` : "",
-        Accept: "application/vnd.github.v3+json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error fetching gist: ${response.statusText}`);
-    }
-
-    const gist = await response.json();
-
-    if (gist) {
-      return gist;
+    const response = await apiClient.get(`/gists/${gistId}`);
+    if (response.status === 200) {
+      return response.data;
     } else {
-      return null;
+      throw new Error(`Error fetching gist: ${response.statusText}`);
     }
   } catch (error) {
     console.error("Error fetching gist:", error);
@@ -56,7 +43,6 @@ export const fetchGistById = async (
 
 export const fetchGistsByUser = async (
   username: string,
-  token: string,
   page?: number,
   perPage?: number
 ): Promise<Gist[] | null> => {
@@ -66,26 +52,19 @@ export const fetchGistsByUser = async (
   }
 
   try {
-    let url = `https://api.github.com/users/${username}/gists`;
+    let url = `/users/${username}/gists`;
     url += `?t=${new Date().getTime()}`;
     if (page !== undefined && perPage !== undefined) {
       url += `&page=${page}&per_page=${perPage}`;
     }
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-    });
+    const response = await apiClient.get(url);
 
-    if (!response.ok) {
+    if (response.status === 200) {
+      return response.data;
+    } else {
       throw new Error(`Error fetching gists: ${response.statusText}`);
     }
-
-    const gists = await response.json();
-    return gists;
   } catch (error) {
     console.error("Error fetching gists:", error);
     return null;
@@ -94,183 +73,129 @@ export const fetchGistsByUser = async (
 
 export const createGist = async (
   description: string,
-  files: Record<string, { content: string }>,
-  token: string
+  files: Record<string, { content: string }>
 ): Promise<Gist | null> => {
   if (!description || Object.keys(files).length === 0) {
     return null;
   }
 
   try {
-    const response = await fetch("https://api.github.com/gists", {
-      method: "POST",
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: "application/vnd.github.v3+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        description,
-        files,
-        public: true,
-      }),
+    const response = await apiClient.post("/gists", {
+      description,
+      files,
+      public: true,
     });
 
-    if (!response.ok) {
+    if (response.status === 201) {
+      return response.data;
+    } else {
       throw new Error(`Error creating gist: ${response.statusText}`);
     }
-
-    const newGist = await response.json();
-    return newGist;
   } catch (error) {
     console.error("Error creating gist:", error);
     return null;
   }
 };
 
-export const forkGist = async (gistId: string, token: string) => {
+export const forkGist = async (gistId: string): Promise<any | null> => {
   try {
-    const response = await fetch(
-      `https://api.github.com/gists/${gistId}/forks`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `token ${token}`, // The OAuth token for the authenticated user
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fork the gist");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error forking gist");
-  }
-};
-
-export const starGist = async (gistId: string, token: string) => {
-  try {
-    const response = await fetch(
-      `https://api.github.com/gists/${gistId}/star`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${token}`,
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to star the gist");
-    }
-
-    return { message: "Gist starred successfully" }; // Custom message
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error starring gist");
-  }
-};
-
-export const fetchStarredGists = async (
-  token: string | null
-): Promise<Gist[]> => {
-  if (!token) {
-    return [];
-  }
-
-  try {
-    const response = await fetch(
-      `https://api.github.com/gists/starred?${new Date().getTime()}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch starred gists");
-    }
-
-    const data: Gist[] = await response.json();
-    return data;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
-    return [];
-  }
-};
-
-export const fetchUserProfile = async (token: string) => {
-  try {
-    const response = await fetch("https://api.github.com/user", {
+    const response = await apiClient.post(`/gists/${gistId}/forks`, null, {
       headers: {
-        Authorization: `token ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
       },
     });
 
-    const userData = await response.json();
-
-    return userData;
+    if (response.status === 201) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fork the gist");
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Error forking gist:", error);
+    return null;
+  }
+};
+
+export const starGist = async (
+  gistId: string
+): Promise<{ message: string } | null> => {
+  try {
+    const response = await apiClient.put(`/gists/${gistId}/star`, null, {
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+
+    if (response.status === 204) {
+      return { message: "Gist starred successfully" };
+    } else {
+      throw new Error("Failed to star the gist");
+    }
+  } catch (error) {
+    console.error("Error starring gist:", error);
+    return null;
+  }
+};
+
+export const fetchStarredGists = async (): Promise<Gist[]> => {
+  try {
+    const response = await apiClient.get("/gists/starred", {
+      params: {
+        t: new Date().getTime(),
+      },
+    });
+
+    return response.data as Gist[];
+  } catch (error) {
+    console.error("Error fetching starred gists:", error);
+    return [];
+  }
+};
+
+export const fetchUserProfile = async (): Promise<any> => {
+  try {
+    const response = await apiClient.get("/user");
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return null;
   }
 };
 
 export const getPublicGists = async (
   page: number,
-  count: number,
-  token: string | null
+  count: number
 ): Promise<publicGistInterface[] | null> => {
   try {
-    const response = await fetch(
-      `https://api.github.com/gists/public?page=${page}&per_page=${count}`,
-      {
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-          Authorization: token ? `token ${token}` : "",
-        },
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+    const response = await apiClient.get("/gists/public", {
+      params: {
+        page,
+        per_page: count,
+      },
+    });
 
-    const data = await response.json();
-    return data;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching public gists:", error);
     return null;
   }
 };
 
-export const fetchGistDetails = async (gistId: string, token: string) => {
+export const fetchGistDetails = async (gistId: string) => {
   try {
-    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
-      method: "GET",
-      headers: {
-        Authorization: token ? `token ${token}` : "",
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await apiClient.get(`/gists/${gistId}`);
 
-    const data = await response.json();
-
-    const files = Object.entries(data.files).map(([filename, file]) => ({
-      filename,
-      content: (file as GistFile).content || "No Content Available",
-    }));
+    const files = Object.entries(response.data.files).map(
+      ([filename, file]) => ({
+        filename,
+        content: (file as GistFile).content || "No Content Available",
+      })
+    );
 
     return files;
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching gist details:", error);
     return [];
   }
 };

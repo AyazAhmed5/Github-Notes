@@ -55,10 +55,7 @@ const UserProfile = () => {
       setLoading(true);
       const contents: { [key: string]: string } = {};
       for (const gist of gists) {
-        const content = await fetchGistDetails(
-          gist.id,
-          user?.token ? user?.token : ""
-        );
+        const content = await fetchGistDetails(gist.id);
         contents[gist.id] = content[0].content;
       }
       setGistContents(contents);
@@ -77,7 +74,7 @@ const UserProfile = () => {
       [gistId]: { ...prev[gistId], star: true },
     }));
     try {
-      const response = await starGist(gistId, token);
+      const response = await starGist(gistId);
       if (response) {
         toast.success("Gist Starred successfully! 🚀");
         dispatch(setStarred({ gistId, isStarred: true }));
@@ -109,12 +106,7 @@ const UserProfile = () => {
       try {
         setLoading(true);
 
-        const fetchedGists = await fetchGistsByUser(
-          githubUserName,
-          user.token,
-          page,
-          2
-        );
+        const fetchedGists = await fetchGistsByUser(githubUserName, page, 2);
 
         if (fetchedGists) {
           setGists(fetchedGists);
@@ -183,12 +175,12 @@ const UserProfile = () => {
                 </>
               )}
             </Typography>
-            <Typography variant="body2" className="text-[#7A7A7A]">
+            <Typography variant="body2" className="text-[#7A7A7A] !text-[11px]">
               {formatCreatedAt(gist.created_at)}
             </Typography>
             <Typography
               variant="body2"
-              className="text-[#7A7A7A] mt-1 truncate w-[60%]"
+              className="text-[#7A7A7A] mt-1 truncate w-[60%] !text-[11px]"
             >
               {gist.description}
             </Typography>
