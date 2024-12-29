@@ -142,6 +142,7 @@ export const fetchStarredGists = async (): Promise<Gist[]> => {
     const response = await apiClient.get("/gists/starred", {
       params: {
         t: new Date().getTime(),
+        per_page: 100,
       },
     });
 

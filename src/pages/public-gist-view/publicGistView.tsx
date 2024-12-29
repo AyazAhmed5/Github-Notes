@@ -28,6 +28,8 @@ import React from "react";
 import { toast } from "react-toastify";
 import { setStarred } from "../../store/gists/gists.slice";
 import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const PublicGistView = () => {
   const { id: paramGistId } = useParams();
@@ -258,7 +260,7 @@ const PublicGistView = () => {
         </div>
         {gistContents.map((gist, index) => (
           <React.Fragment key={index}>
-            <Box className="bg-[#f5f5f5] border-b mt-2">
+            <Box className="bg-[#FAFAFA] border-b mt-2">
               <Typography
                 variant="subtitle1"
                 className="!text-[14px] !leading-8 mt-1"
@@ -267,7 +269,7 @@ const PublicGistView = () => {
               </Typography>
             </Box>
             <Box
-              className="p-2 bg-[#f5f5f5] mb-4 overflow-auto rounded-t-md flex items-center flex-col"
+              className="p-2 bg-[#FAFAFA] mb-4 overflow-auto rounded-t-md flex items-center flex-col"
               style={{ height: "auto" }}
             >
               {loading ? (
@@ -278,12 +280,25 @@ const PublicGistView = () => {
                   <Skeleton variant="text" width="100%" height="30%" />
                 </>
               ) : (
-                <pre
-                  className="text-[12px] leading-[1.4] overflow-auto w-full max-h-full"
-                  style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                <SyntaxHighlighter
+                  language="javascript"
+                  style={docco}
+                  wrapLongLines={true}
+                  showLineNumbers={true}
+                  lineNumberStyle={{
+                    color: "green",
+                    fontSize: "10px",
+                    paddingRight: "10px",
+                  }}
+                  customStyle={{
+                    maxHeight: "80%",
+                    fontSize: "12px",
+                    lineHeight: "15px",
+                    backgroundColor: "#FAFAFA",
+                  }}
                 >
                   {gist.content}
-                </pre>
+                </SyntaxHighlighter>
               )}
             </Box>
           </React.Fragment>

@@ -7,6 +7,8 @@ import { RootState } from "../../store/root-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { setTrigger } from "../../store/user/user.slice";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import SyntaxHighlighter from "react-syntax-highlighter";
 
 const CreateGists = () => {
   const dispatch = useDispatch();
@@ -90,7 +92,6 @@ const CreateGists = () => {
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-900"
           />
         </div>
-
         {files.map((file, index) => (
           <div key={index} className="border border-gray-300 ">
             <div className="flex flex-col gap-2 items-start w-full bg-gray-100 ">
@@ -102,29 +103,64 @@ const CreateGists = () => {
                     handleFileChange(index, "name", e.target.value)
                   }
                   placeholder="Filename including extension..."
-                  className="w-full m-2 p-3 border border-gray-400 rounded-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-green-900"
+                  className="w-full m-2 p-3 border border-gray-400 rounded-sm bg-gray-100  focus:outline-none focus:ring-1 focus:ring-green-900"
                 />
 
                 <img
                   onClick={() => handleDeleteFile(index)}
-                  className={`h-5 w-5 text-red-500 ${file.name === "" ? "hidden" : ""} cursor-pointer self-center`}
+                  className={`h-5 w-5 text-red-500 ${
+                    file.name === "" ? "hidden" : ""
+                  } cursor-pointer self-center`}
                   src={deleteIcon}
                   alt="delete-icon"
                 />
               </Box>
 
-              <textarea
-                value={file.content}
-                onChange={(e) =>
-                  handleFileChange(index, "content", e.target.value)
-                }
-                rows={8}
-                className="w-full p-3 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-900"
-              />
+              <div style={{ position: "relative", width: "100%" }}>
+                <SyntaxHighlighter
+                  language="javascript"
+                  style={docco}
+                  showLineNumbers
+                  wrapLines
+                  lineNumberStyle={{
+                    color: "green",
+                    fontSize: "12px",
+                    paddingRight: "10px",
+                  }}
+                  customStyle={{
+                    margin: 0,
+                    color: "gray",
+                    border: "1px solid #ccc",
+                    backgroundColor: "#FFFFFF",
+                    minHeight: "200px",
+                  }}
+                >
+                  {file.content || " "}
+                </SyntaxHighlighter>
+
+                <textarea
+                  value={file.content}
+                  onChange={(e) =>
+                    handleFileChange(index, "content", e.target.value)
+                  }
+                  rows={8}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    background: "transparent",
+                    border: "none",
+                    color: "grey",
+                    caretColor: "black",
+                  }}
+                />
+              </div>
             </div>
           </div>
         ))}
-
         <div className=" mt-4 flex justify-between">
           <button
             onClick={handleAddFile}

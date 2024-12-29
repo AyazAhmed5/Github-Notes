@@ -27,7 +27,8 @@ import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 import ForkIcon from "../../assets/images/forkIcon.svg";
 import starIcon from "../../assets/images/star-icon.svg";
 import { Link } from "react-router";
-
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 const CardViewGists = () => {
   const dispatch = useDispatch();
   const { gists, loading, gistLoading, searchedGist, searchQuery } =
@@ -146,7 +147,7 @@ const CardViewGists = () => {
       >
         <Link to={`/public-gist-view/${gist?.id}`}>
           <Box
-            className="p-2 bg-[#f5f5f5] overflow-hidden rounded-t-md flex items-center flex-col cursor-pointer"
+            className="p-2 bg-[#FAFAFA] overflow-hidden rounded-t-md flex items-start flex-col cursor-pointer"
             style={{ height: "140px" }}
           >
             {loading ? (
@@ -156,14 +157,27 @@ const CardViewGists = () => {
                 <Skeleton variant="text" width="100%" height="30%" />
               </>
             ) : (
-              <pre
-                className="text-[12px] leading-[1.4] overflow-hidden w-full max-h-full"
-                style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+              <SyntaxHighlighter
+                language="javascript"
+                style={docco}
+                wrapLongLines={true}
+                showLineNumbers={true}
+                lineNumberStyle={{
+                  color: "green",
+                  fontSize: "10px",
+                  paddingRight: "10px",
+                }}
+                customStyle={{
+                  maxHeight: "80%",
+                  fontSize: "12px",
+                  lineHeight: "15px",
+                  backgroundColor: "#FAFAFA",
+                }}
               >
                 {gistContents[gist?.id]
-                  ? gistContents[gist?.id].slice(0, 200) + "..." // Show the first 200 characters and add "..."
+                  ? gistContents[gist?.id].slice(0, 200) + "..." // Show the first 200 characters
                   : "No preview available"}
-              </pre>
+              </SyntaxHighlighter>
             )}
           </Box>
         </Link>
