@@ -269,7 +269,7 @@ const PublicGistView = () => {
               </Typography>
             </Box>
             <Box
-              className="p-2 bg-[#FAFAFA] mb-4 overflow-auto rounded-t-md flex items-center flex-col"
+              className="p-2 bg-[#FAFAFA] mb-4 overflow-auto rounded-t-md flex items-start flex-col"
               style={{ height: "auto" }}
             >
               {loading ? (

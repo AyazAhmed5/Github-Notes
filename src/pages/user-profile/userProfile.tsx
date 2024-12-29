@@ -52,6 +52,10 @@ const UserProfile = () => {
   const totalNumberOfPages = Math.ceil(userGistsCount / 2);
 
   useEffect(() => {
+    dispatch(setPage(1));
+  }, []);
+
+  useEffect(() => {
     const fetchContents = async () => {
       if (!gists) return;
       setLoading(true);
