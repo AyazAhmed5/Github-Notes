@@ -12,14 +12,10 @@ import CardViewGists from "../card-view-gists/cardViewGists";
 import ListViewGists from "../list-view-gists/listViewGists";
 import rightIcon from "../../assets/images/righIcon.svg";
 import leftIcon from "../../assets/images/leftIcon.svg";
-import { useLocation } from "react-router";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const { page, searchedGist, searchQuery } = useSelector(
-    (state: RootState) => state.gists
-  );
+  const { page, searchQuery } = useSelector((state: RootState) => state.gists);
   const { trigger } = useSelector((state: RootState) => state.user);
 
   const [showGridView, setShowGridView] = useState<boolean>(false);
@@ -46,11 +42,7 @@ const LandingPage = () => {
   return (
     <div className="layout">
       <div className="mb-4 flex justify-between items-center">
-        <Typography className="!text-2xl !mb-2">
-          {location.pathname === "/starredGists"
-            ? "Starred Gists"
-            : "Public Gists"}
-        </Typography>
+        <Typography className="!text-2xl !mb-2">Public Gists</Typography>
         <div className="filters-container">
           <Box
             className={`icon-box ${!showGridView ? "" : " bg-[#E3E3E3]"}  cursor-pointer`}
@@ -95,10 +87,8 @@ const LandingPage = () => {
                   />
                   <div className=" !text-[14px] !font-normal text-[#3D3D3D] flex   items-center  gap-4">
                     Page
-                    <span className="border px-2 py-1 rounded-md">
-                      {searchedGist ? "1" : page}
-                    </span>
-                    of {searchedGist ? "1" : "500"}
+                    <span className="border px-2 py-1 rounded-md">{page}</span>
+                    of {"500"}
                   </div>
                   <img
                     onClick={handleNextPage}

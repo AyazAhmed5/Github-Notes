@@ -80,7 +80,6 @@ const PublicGistView = () => {
     }));
     try {
       const forkedGist = await forkGist(gistId);
-      console.log("🚀 ~ handleForkClick ~ forkedGist:", forkedGist);
 
       if (forkedGist) {
         toast.success("Gist forked successfully! 🚀");

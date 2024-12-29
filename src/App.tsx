@@ -10,6 +10,7 @@ import CreateGists from "./pages/create-gists/createGists";
 import UserProfile from "./pages/user-profile/userProfile";
 import LandingPage from "./pages/landing-page/landingPage";
 import PublicGistView from "./pages/public-gist-view/publicGistView";
+import StarredGistView from "./pages/starred-gists/starredGistView";
 
 const theme = createTheme({
   typography: {
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/starred-gists" element={<StarredGistView />} />
           <Route path="/create-gists" element={<CreateGists />} />
           <Route path="/public-gist-view/:id" element={<PublicGistView />} />
         </Routes>

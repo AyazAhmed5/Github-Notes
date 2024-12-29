@@ -195,6 +195,9 @@ const Header = () => {
           <Link to={"/user-profile"}>
             <MenuItem onClick={handleClose}>Your gists</MenuItem>
           </Link>
+          <Link to={"/starred-gists"}>
+            <MenuItem onClick={handleClose}>Starred gists</MenuItem>
+          </Link>
           <Link to={"/create-gists"}>
             <MenuItem onClick={handleClose}>Create gist</MenuItem>
           </Link>
