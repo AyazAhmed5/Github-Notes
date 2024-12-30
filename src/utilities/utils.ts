@@ -13,6 +13,7 @@ export const LoginWithGithub = async () => {
 
     const credential = GithubAuthProvider.credentialFromResult(result);
     const token = credential!.accessToken;
+
     if (token) {
       localStorage.setItem("GITHUB_TOKEN", token);
     }
