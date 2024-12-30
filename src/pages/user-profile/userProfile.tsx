@@ -9,12 +9,7 @@ import {
 } from "@mui/material";
 import { RootState } from "../../store/root-reducer";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchGistDetails,
-  fetchGistsByUser,
-  formatCreatedAt,
-  starGist,
-} from "../../utilities/utils";
+import { formatCreatedAt } from "../../utilities/utils";
 import { useEffect, useState } from "react";
 import { Gist } from "../../utilities/types";
 import { toast } from "react-toastify";
@@ -27,6 +22,7 @@ import rightIcon from "../../assets/images/righIcon.svg";
 import leftIcon from "../../assets/images/leftIcon.svg";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { fetchGistDetails, starGist, fetchGistsByUser } from "../../services";
 
 const UserProfile = () => {
   const dispatch = useDispatch();

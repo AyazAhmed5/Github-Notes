@@ -15,12 +15,7 @@ import StarIcon from "@mui/icons-material/Star";
 
 import { RootState } from "../../store/root-reducer";
 import { Gist } from "../../utilities/types";
-import {
-  fetchGistDetails,
-  forkGist,
-  formatCreatedAt,
-  starGist,
-} from "../../utilities/utils";
+import { formatCreatedAt } from "../../utilities/utils";
 import { setStarred } from "../../store/gists/gists.slice";
 import { setLoading } from "../../store/gists/gists.slice";
 import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
@@ -29,6 +24,7 @@ import starIcon from "../../assets/images/star-icon.svg";
 import { Link } from "react-router";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { fetchGistDetails, forkGist, starGist } from "../../services";
 const CardViewGists = () => {
   const dispatch = useDispatch();
   const { gists, loading, gistLoading, searchedGist, searchQuery } =

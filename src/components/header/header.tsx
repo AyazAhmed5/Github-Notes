@@ -15,13 +15,6 @@ import Button from "@mui/material/Button";
 import EmumbaLogo from "../../assets/images/Emumba-logo.svg";
 import { RootState } from "../../store/root-reducer";
 import {
-  fetchGistById,
-  fetchGistsByUser,
-  fetchStarredGists,
-  fetchUserProfile,
-  LoginWithGithub,
-} from "../../utilities/utils";
-import {
   setUser,
   selectIsLoggedIn,
   setUserGithubProfile,
@@ -38,6 +31,13 @@ import {
   setSearchQuery,
 } from "../../store/gists/gists.slice";
 import { toast } from "react-toastify";
+import {
+  fetchGistById,
+  fetchGistsByUser,
+  fetchStarredGists,
+  fetchUserProfile,
+  LoginWithGithub,
+} from "../../services";
 
 const Header = () => {
   const dispatch = useDispatch();

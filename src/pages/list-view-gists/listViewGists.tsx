@@ -8,12 +8,13 @@ import { toast } from "react-toastify";
 import { RootState } from "../../store/root-reducer";
 import { setStarred } from "../../store/gists/gists.slice";
 import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
-import { forkGist, formatTimeAgo, starGist } from "../../utilities/utils";
+import { formatTimeAgo } from "../../utilities/utils";
 import { Gist } from "../../utilities/types";
 
 import ForkIcon from "../../assets/images/forkIcon.svg";
 import starIcon from "../../assets/images/star-icon.svg";
 import { useNavigate } from "react-router";
+import { forkGist, starGist } from "../../services";
 
 const ListViewGists = () => {
   const dispatch = useDispatch();

@@ -3,13 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import {
-  fetchGistById,
-  fetchGistDetails,
-  forkGist,
-  formatCreatedAt,
-  starGist,
-} from "../../utilities/utils";
+import { formatCreatedAt } from "../../utilities/utils";
 import {
   Avatar,
   Box,
@@ -30,6 +24,12 @@ import { setStarred } from "../../store/gists/gists.slice";
 import { selectIsLoggedIn, setTrigger } from "../../store/user/user.slice";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import {
+  fetchGistDetails,
+  fetchGistById,
+  forkGist,
+  starGist,
+} from "../../services";
 
 const PublicGistView = () => {
   const { id: paramGistId } = useParams();
@@ -187,7 +187,11 @@ const PublicGistView = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isLoggedIn) {
-                    handleForkClick(selectedGist.id);
+                    if (forkCount === 0) {
+                      handleForkClick(selectedGist.id);
+                    } else {
+                      toast.success("Already Forked !!");
+                    }
                   } else {
                     handleClick(e);
                   }
@@ -217,7 +221,11 @@ const PublicGistView = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isLoggedIn) {
-                    handleStarClick(selectedGist.id);
+                    if (starCount === 0) {
+                      handleStarClick(selectedGist.id);
+                    } else {
+                      toast.success("Already Starred");
+                    }
                   } else {
                     handleClick(e);
                   }

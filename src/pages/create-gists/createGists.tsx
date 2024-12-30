@@ -1,7 +1,6 @@
 import { useState } from "react";
 import deleteIcon from "../../assets/images/delete-icon.svg";
 import { Box } from "@mui/material";
-import { createGist } from "../../utilities/utils";
 import { toast } from "react-toastify";
 import { RootState } from "../../store/root-reducer";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +8,7 @@ import { useNavigate } from "react-router";
 import { setTrigger } from "../../store/user/user.slice";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import SyntaxHighlighter from "react-syntax-highlighter";
+import { createGist } from "../../services";
 
 const CreateGists = () => {
   const dispatch = useDispatch();

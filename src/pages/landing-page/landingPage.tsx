@@ -7,11 +7,11 @@ import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlin
 
 import { RootState } from "../../store/root-reducer";
 import { setGists, setPage } from "../../store/gists/gists.slice";
-import { getPublicGists } from "../../utilities/utils";
 import CardViewGists from "../card-view-gists/cardViewGists";
 import ListViewGists from "../list-view-gists/listViewGists";
 import rightIcon from "../../assets/images/righIcon.svg";
 import leftIcon from "../../assets/images/leftIcon.svg";
+import { getPublicGists } from "../../services";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
