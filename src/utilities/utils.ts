@@ -18,7 +18,9 @@ export const LoginWithGithub = async () => {
     }
 
     const user = result.user;
-    return { user, token };
+    const screenName = user.reloadUserInfo?.screenName;
+
+    return { user, token, screenName };
   } catch (error) {
     console.error("Error during GitHub login:", error);
     throw error;

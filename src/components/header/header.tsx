@@ -68,13 +68,13 @@ const Header = () => {
   };
 
   const handleLogin = async () => {
-    const { user, token } = await LoginWithGithub();
-    toast.success(`${user.displayName || "User"} logged in successfully!`);
+    const { user, token, screenName } = await LoginWithGithub();
+    toast.success(`${user.displayName || screenName} logged in successfully!`);
     dispatch(
       setUser({
         uid: user.uid,
         email: user.email,
-        name: user.displayName || "Unknown User",
+        name: user.displayName || screenName,
         token: token ?? null,
         photoUrl: user.photoURL,
       })
